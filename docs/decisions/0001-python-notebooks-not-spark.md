@@ -10,4 +10,4 @@
 - Sessions start in seconds and use a fraction of the capacity units a Spark pool would. That matters on an F2/F4 capacity shared with reports.
 - The Python path runs on the laptop, in CI and in Fabric; the Spark path runs in CI and Fabric.
 - The SQL is close to Spark SQL, and [ADR 0004](0004-spark-shadow-path.md) carries the core logic over to PySpark, proven identical in CI.
-- Next, for a genuinely big source: Spark tuning (partitioning, `OPTIMIZE`/`VACUUM` schedules, V-Order).
+- Spark tuning for the Spark path (month partitioning, `OPTIMIZE` with Z-ORDER and V-Order, `VACUUM`) lives in `nb_spark_maintenance` and is checked in CI.

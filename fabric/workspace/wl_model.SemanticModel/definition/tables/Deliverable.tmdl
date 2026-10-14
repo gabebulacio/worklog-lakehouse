@@ -1,0 +1,77 @@
+/// Sold positions from the CRM: role, period, monthly hours and rate.
+table Deliverable
+	lineageTag: 67133d55-6442-507f-a06a-eef02e2ddc2a
+
+	column 'Deliverable ID'
+		dataType: string
+		isKey
+		isHidden
+		lineageTag: 75ee11e2-185a-53c0-8856-e3105c2428d9
+		summarizeBy: none
+		sourceColumn: deliverable_id
+
+	column Role
+		dataType: string
+		lineageTag: ae672951-9015-5f53-a8eb-e93d0aeda28a
+		summarizeBy: none
+		sourceColumn: role
+
+	column 'Start Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: b3aeb9e0-0b01-54cf-9480-48d40bf3aa16
+		summarizeBy: none
+		sourceColumn: start_date
+
+	column 'End Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 77ec18a0-85e1-5331-896e-0d928ef2d0a0
+		summarizeBy: none
+		sourceColumn: end_date
+
+	column 'Monthly Hours'
+		dataType: double
+		formatString: #,##0
+		lineageTag: 30b4afd5-52ce-5fd9-9acf-77ba971d193f
+		summarizeBy: none
+		sourceColumn: monthly_hours
+
+	column Rate
+		dataType: double
+		formatString: $#,##0.00
+		lineageTag: ba0d4806-c78f-5897-a997-bc197f09b204
+		summarizeBy: none
+		sourceColumn: rate
+
+	column Approved
+		dataType: boolean
+		lineageTag: 3bf919e5-68ce-5d68-a160-9bcc260110b2
+		summarizeBy: none
+		sourceColumn: approved
+
+	column Opportunity
+		dataType: string
+		lineageTag: 6d2f9da5-4b69-5969-8fe2-f7074a97c2c9
+		summarizeBy: none
+		sourceColumn: opportunity_name
+
+	column 'Account ID'
+		dataType: string
+		isHidden
+		lineageTag: 459cb59d-cf69-566b-8522-c71db5787841
+		summarizeBy: none
+		sourceColumn: account_id
+
+	column 'Account Name'
+		dataType: string
+		isHidden
+		lineageTag: 745cf25e-81b5-5985-8566-866bf14f2771
+		summarizeBy: none
+		sourceColumn: account_name
+
+	partition Deliverable = entity
+		mode: directLake
+		source
+			entityName: gold_dim_deliverable
+			expressionSource: DatabaseQuery

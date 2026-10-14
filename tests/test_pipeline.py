@@ -70,7 +70,7 @@ def test_ambiguous_names_are_never_guessed(daily_lake):
     assert ("timesheet_app",) in audit, "the ambiguous login should be on the unmatched worklist"
 
 
-@pytest.mark.parametrize("table", ["gold_fact_worklog", "gold_dim_user", "gold_dim_project", "gold_dim_date",
+@pytest.mark.parametrize("table", ["gold_fact_worklog", "gold_fact_capacity", "gold_dim_user", "gold_dim_project", "gold_dim_date",
                                    "gold_mart_sold_vs_utilized", "gold_mart_coverage_month",
                                    "gold_mart_nonloggers", "gold_audit_unmatched_workers"])
 def test_gold_tables_exist_and_are_populated(daily_lake, table):

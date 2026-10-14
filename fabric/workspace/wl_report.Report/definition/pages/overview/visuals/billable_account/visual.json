@@ -1,0 +1,75 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "billable_account",
+  "position": {
+    "x": 20,
+    "y": 440,
+    "z": 6,
+    "height": 260,
+    "width": 610,
+    "tabOrder": 6
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Account"
+                    }
+                  },
+                  "Property": "Account"
+                }
+              },
+              "queryRef": "Account.Account",
+              "nativeQueryRef": "Account",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Worklog"
+                    }
+                  },
+                  "Property": "Billable Hours"
+                }
+              },
+              "queryRef": "Worklog.Billable Hours",
+              "nativeQueryRef": "Billable Hours"
+            }
+          ]
+        },
+        "Legend": {
+          "projections": []
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Billable hours by account'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

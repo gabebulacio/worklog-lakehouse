@@ -1,0 +1,10 @@
+/// The lakehouse's SQL analytics endpoint; parameter.yml swaps in the real values at deploy time.
+expression DatabaseQuery =
+		let
+		    database = Sql.Database ( "__SQL_ENDPOINT__", "__SQL_ENDPOINT_ID__" )
+		in
+		    database
+	lineageTag: 692ff928-3923-535b-967b-139908059349
+
+	annotation PBI_IncludeFutureArtifacts = False
+

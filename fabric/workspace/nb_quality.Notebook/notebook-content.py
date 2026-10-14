@@ -172,7 +172,7 @@ def secret(name, default=""):
 
 AS_OF = date.fromisoformat(run_date) if run_date else date.today()
 register(sw="silver_worklogs", fw="gold_fact_worklog", du="gold_dim_user", dp="gold_dim_project",
-         dd="gold_dim_date", uh="silver_user_history", reg="silver_project_registry",
+         dd="gold_dim_date", fc="gold_fact_capacity", da="gold_dim_account", uh="silver_user_history", reg="silver_project_registry",
          conf="silver_identity_conflicts", cov="gold_mart_coverage_month", manifest="ops_ingested_files")
 
 # registry stability: every row of the previous Delta version must still exist unchanged
@@ -200,6 +200,11 @@ CHECKS = [
     ("fact_user_fk", "error", "select count(*) from fw anti join du using (user_key)", 0),
     ("fact_project_fk", "error", "select count(*) from fw anti join dp using (project_key)", 0),
     ("fact_date_fk", "error", "select count(*) from fw anti join dd using (date)", 0),
+    ("project_account_fk", "error",
+     "select count(*) from dp where account_id is not null and account_id not in (select account_id from da)", 0),
+    ("capacity_user_fk", "error", "select count(*) from fc anti join du using (user_key)", 0),
+    ("capacity_one_row_per_person_day", "error",
+     "select count(*) from (select 1 from fc group by user_key, date having count(*) > 1)", 0),
     ("registry_keys_unique", "error", "select count(*) - count(distinct project_key) from reg", 0),
     ("registry_codes_unique", "error",
      "select count(*) from (select 1 from reg group by source, project_code having count(*) > 1)", 0),

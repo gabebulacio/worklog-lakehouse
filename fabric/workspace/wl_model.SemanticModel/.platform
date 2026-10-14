@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "wl_model",
+    "description": "Direct Lake semantic model over the gold tables: star schema, marked date table, DAX measures in display folders."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ef42aecc-7df0-46b9-a5c6-0ec686250919"
+  }
+}

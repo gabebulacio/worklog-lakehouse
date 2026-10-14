@@ -1,0 +1,40 @@
+relationship b6394275-2a5e-5b55-b257-16f5ba4d2519
+	fromColumn: Worklog.Date
+	toColumn: Date.Date
+
+relationship 743a124e-56e5-56b1-b7f9-ec9c756d0efc
+	fromColumn: Worklog.'User Key'
+	toColumn: User.'User Key'
+
+relationship 5d237c7e-5e17-57b0-913b-0f937130970b
+	fromColumn: Worklog.'Project Key'
+	toColumn: Project.'Project Key'
+
+relationship 377d3751-48da-510e-acbb-c3ccf6b1e870
+	fromColumn: Project.'Account ID'
+	toColumn: Account.'Account ID'
+
+relationship a287c61c-9221-5bcf-99b5-56214f42b20d
+	fromColumn: Capacity.Date
+	toColumn: Date.Date
+
+relationship a086fbaf-b296-5159-accb-d225523ca93b
+	fromColumn: Capacity.'User Key'
+	toColumn: User.'User Key'
+
+relationship 2164bfde-b4bd-5aa4-9f92-33c80e252115
+	fromColumn: Assignment.Month
+	toColumn: Date.Date
+
+relationship e40a677b-a507-5c43-9d51-575ae286bc67
+	fromColumn: Assignment.'User Key'
+	toColumn: User.'User Key'
+
+relationship 77d53946-89cf-5d96-a2a8-4e4fcb4b30df
+	fromColumn: Assignment.'Deliverable ID'
+	toColumn: Deliverable.'Deliverable ID'
+
+relationship ae574c9e-078f-584a-adce-85a32881d1a5
+	fromColumn: Assignment.'Account ID'
+	toColumn: Account.'Account ID'
+

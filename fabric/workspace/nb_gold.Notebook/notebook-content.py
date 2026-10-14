@@ -18,9 +18,11 @@
 # | `silver_project_registry` | source × project code | **append-only**: a new code gets `max(key) + 1` and keeps it forever, so report relationships and finance references never break |
 # | `gold_dim_user` | user | current version from `silver_user_history`, `is_expected` (enabled and not exempt), manager name; `UNKNOWN` member |
 # | `gold_dim_project` | project key | registry + CRM account (timesheets match on client name, the tracker on project key); `-1` unknown member |
+# | `gold_dim_account` | CRM account | conformed: projects and assignments both relate to it; internal projects have none |
 # | `gold_dim_deliverable` | sold position | CRM deliverable + opportunity + account |
 # | `gold_dim_date` | day | calendar for the model (mark as date table) |
 # | `gold_fact_worklog` | worklog | **lean**: keys, hours, billable hours, logging delay, how the person was matched |
+# | `gold_fact_capacity` | user × working day | hours a person could work (`CapacityHoursPerDay`), the utilization denominator |
 # | `gold_fact_assignment_month` | assignment × month | CRM assignments prorated by calendar-day overlap × allocation × `AssignedHoursPerMonth` |
 # | `gold_mart_sold_vs_utilized` | month × user × account | assigned vs logged hours, status |
 # | `gold_mart_coverage_month` | month | expected vs logging people, unmatched hours |
@@ -241,6 +243,15 @@ dim_project = sql(f"""
 """)
 write_table(dim_project, "gold_dim_project")
 
+# conformed account dimension: projects and CRM assignments both point at it (sold vs logged by account)
+dim_account = sql("""
+    select accountid as account_id, name as account_name, owner as account_owner,
+           tracker_project_key, statecode as account_state
+    from accounts
+""" if HAS_CRM else "select null::varchar as account_id, null::varchar as account_name, null::varchar as account_owner, "
+    "null::varchar as tracker_project_key, null::varchar as account_state where false")
+write_table(dim_account, "gold_dim_account")
+
 dim_user = sql("""
     with cur as (select * from hist where is_current)
     select c.user_key, c.display_name, c.email, c.department, c.job_title, c.country, c.origin,
@@ -323,6 +334,18 @@ dim_date = sql(f"""
     from generate_series(DATE '{dates[0]}', DATE '{dates[1]}', interval 1 day) t(d)
 """)
 write_table(dim_date, "gold_dim_date")
+db.register("ddate", dim_date)
+
+# --- capacity: the denominator of utilization ------------------------------------------------
+# One row per expected person (directory, not timesheet-exempt) per working day they were employed.
+capacity = sql(f"""
+    select d.date, u.user_key, cast({float(var("CapacityHoursPerDay", 8))} as double) as capacity_hours
+    from ddate d join du u
+      on u.origin = 'directory' and not u.is_timesheet_exempt
+     and u.hire_date <= d.date and (u.leave_date is null or d.date < u.leave_date)
+    where not d.is_weekend and d.date <= DATE '{AS_OF}'
+""")
+write_table(capacity, "gold_fact_capacity")
 
 # METADATA ********************
 

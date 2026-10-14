@@ -6,7 +6,8 @@ Worklog Lakehouse: a Microsoft Fabric medallion (bronze → silver → gold) in 
 
 | Path | What |
 |---|---|
-| `fabric/workspace/` | The Fabric items that get deployed: lakehouse, variable library, 8 Python notebooks, 3 Spark notebooks, 3 pipelines, `parameter.yml` |
+| `fabric/workspace/` | The Fabric items that get deployed: lakehouse, variable library, 8 Python and 4 Spark notebooks, 3 pipelines, `wl_model.SemanticModel` (Direct Lake TMDL), `wl_report.Report` (PBIR), `parameter.yml` |
+| `local/build_model.py`, `local/verify_model.py` | The semantic model's single definition (generates the TMDL) and the DAX-vs-DuckDB check |
 | `fabric/shared/bootstrap.py`, `bootstrap_spark.py` | Setup cells shared by the Python and the Spark notebooks; `python run.py sync` copies each in |
 | `fabric/deploy.py` | fabric-cicd publish |
 | `local/fabric_local.py` | Runs `notebook-content.py` files locally (cell parser + `notebookutils` stand-in) |
@@ -29,6 +30,7 @@ python run.py setup | demo | day | full | tables | sql "…" | nb <notebook> k=v
 - The files in `fabric/workspace/` are what deploys. Never edit a notebook's bootstrap cell: edit `fabric/shared/bootstrap.py`, then `python run.py sync`.
 - Never put a secret in the variable library; credentials come from Key Vault through `secret()`.
 - **Clean room.** This rebuilds kinds of problems from past employer work on synthetic data. Never add copied code, names, emails, tenant/app IDs, client names or real figures. New source quirks go in `nb_land_synthetic`, on fixed people or rows, not probabilities.
+- **Semantic model:** never edit `wl_model.SemanticModel` by hand; change `local/build_model.py`, then `python run.py model`. After changing a measure, re-run `local/verify_model.py` against a blank Power BI Desktop (never connect `pbi-cli` to a Desktop window you didn't open for this).
 - Notebooks must run on Python 3.11, the Fabric runtime and the version CI uses.
 - **Spark shadow path** (`nb_spark_*`, `nb_parity`, `pl_spark_shadow`): any change to the logic in a Python silver notebook or the fact attribution needs the same change in its Spark port. This machine can't run Spark; the CI job `spark-parity` is the proof, so say so when a Spark change hasn't been through CI yet.
 - **Done means `python run.py test` passes** (35+ tests and ruff), the same as CI.

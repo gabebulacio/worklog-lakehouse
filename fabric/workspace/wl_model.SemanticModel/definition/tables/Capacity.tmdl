@@ -1,0 +1,84 @@
+/// One row per expected person per working day: the denominator of utilization.
+table Capacity
+	lineageTag: 8c1fee4b-dc31-535e-a38b-595f6307dab3
+
+	/// Hours expected people could work: working days employed x hours per day.
+	measure 'Capacity Hours' = SUM ( Capacity[Hours] )
+		formatString: #,##0
+		displayFolder: Capacity
+		lineageTag: 7192a4a8-f7b9-5848-8e12-76e22cae720c
+
+	/// Billable hours over capacity hours.
+	measure 'Utilization %' = DIVIDE ( [Billable Hours], [Capacity Hours] )
+		formatString: 0.0%
+		displayFolder: Capacity
+		lineageTag: 903a7385-3a44-5f27-bf28-9becc7740aa1
+
+	/// Utilization in the previous month.
+	measure 'Utilization % PM' = CALCULATE ( [Utilization %], DATEADD ( 'Date'[Date], -1, MONTH ) )
+		formatString: 0.0%
+		displayFolder: Time intelligence
+		lineageTag: 91d1eb11-d188-5ffc-be0d-f1361bd97185
+
+	/// Percentage-point change in utilization against the previous month.
+	measure 'Utilization Change (pts)' =
+			VAR prior = [Utilization % PM]
+			RETURN
+			    IF ( NOT ISBLANK ( prior ), [Utilization %] - prior )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Time intelligence
+		lineageTag: 4e02fb8b-589e-510d-a63e-e899e1b8f779
+
+	/// People with capacity in the period: enabled, not exempt, employed.
+	measure 'Expected People' = CALCULATE ( DISTINCTCOUNT ( 'User'[User Key] ), Capacity )
+		formatString: #,##0
+		displayFolder: Coverage
+		lineageTag: f9893a5e-2385-562f-b5e3-9d2b19d128ea
+
+	/// Expected people who logged at least one entry in the period.
+	measure 'Logging People' =
+			VAR expected = CALCULATETABLE ( VALUES ( 'User'[User Key] ), Capacity )
+			RETURN
+			    COUNTROWS ( FILTER ( expected, CALCULATE ( NOT ISEMPTY ( Worklog ) ) ) )
+		formatString: #,##0
+		displayFolder: Coverage
+		lineageTag: 265c37c5-0190-51bc-a506-5fe6910ab5cc
+
+	/// Logging people over expected people.
+	measure 'Coverage %' = DIVIDE ( [Logging People], [Expected People] )
+		formatString: 0.0%
+		displayFolder: Coverage
+		lineageTag: a7954f24-0d6c-5cc1-8b22-bb547e916fb9
+
+	/// Expected people with no worklog in the period.
+	measure 'People Not Logging' = [Expected People] - [Logging People]
+		formatString: #,##0
+		displayFolder: Coverage
+		lineageTag: 4332f7f3-6504-5989-9616-d2c91e614291
+
+	column Date
+		dataType: dateTime
+		isHidden
+		lineageTag: 904fef31-d19c-5b60-8f67-8deb8812d7f5
+		summarizeBy: none
+		sourceColumn: date
+
+	column 'User Key'
+		dataType: string
+		isHidden
+		lineageTag: 63464e1b-450b-5ac2-8a88-9c76668bbec3
+		summarizeBy: none
+		sourceColumn: user_key
+
+	column Hours
+		dataType: double
+		isHidden
+		lineageTag: 01d4feed-7efa-51a1-8c1b-7316766b19c3
+		summarizeBy: sum
+		sourceColumn: capacity_hours
+
+	partition Capacity = entity
+		mode: directLake
+		source
+			entityName: gold_fact_capacity
+			expressionSource: DatabaseQuery

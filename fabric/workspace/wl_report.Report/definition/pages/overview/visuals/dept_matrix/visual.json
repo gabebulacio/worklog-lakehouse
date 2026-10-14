@@ -1,0 +1,100 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "dept_matrix",
+  "position": {
+    "x": 650,
+    "y": 440,
+    "z": 7,
+    "height": 260,
+    "width": 610,
+    "tabOrder": 7
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "User"
+                    }
+                  },
+                  "Property": "Department"
+                }
+              },
+              "queryRef": "User.Department",
+              "nativeQueryRef": "Department",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity"
+                    }
+                  },
+                  "Property": "Utilization %"
+                }
+              },
+              "queryRef": "Capacity.Utilization %",
+              "nativeQueryRef": "Utilization %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity"
+                    }
+                  },
+                  "Property": "Coverage %"
+                }
+              },
+              "queryRef": "Capacity.Coverage %",
+              "nativeQueryRef": "Coverage %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Worklog"
+                    }
+                  },
+                  "Property": "Hours Logged"
+                }
+              },
+              "queryRef": "Worklog.Hours Logged",
+              "nativeQueryRef": "Hours Logged"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'By department'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

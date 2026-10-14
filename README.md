@@ -66,6 +66,7 @@ Design decisions are in [docs/decisions/](docs/decisions/):
 - [0002](docs/decisions/0002-silver-recompute-person-day-rule.md): recompute silver with the person-day rule instead of an incremental MERGE
 - [0003](docs/decisions/0003-clean-room-synthetic-rebuild.md): clean-room rebuild on synthetic sources
 - [0004](docs/decisions/0004-spark-shadow-path.md): a Spark path, proven identical in CI
+- [0005](docs/decisions/0005-semantic-model-as-code.md): the semantic model as code, every measure checked against the lakehouse
 
 ### Identity resolution: attribution order
 
@@ -91,15 +92,43 @@ python -m pip install fabric-cicd azure-identity
 python fabric/deploy.py --workspace-id <GUID> --environment dev
 ```
 
-This publishes the lakehouse, variable library, 11 notebooks (7 Python, 3 Spark, plus `nb_parity`) and 3 pipelines in place, matched by `logicalId`. `parameter.yml` swaps the pipelines' sentinel IDs for the real orchestrator and workspace IDs per environment, so nobody re-links activities by hand. Then run `pl_monthly_full` once with `date_from=2026-01-01` to backfill, and schedule `pl_daily`.
+This publishes the lakehouse, variable library, 12 notebooks (7 Python, 4 Spark, plus `nb_parity`), 3 pipelines, the semantic model and the report in place, matched by `logicalId`. `parameter.yml` swaps the pipelines' sentinel IDs for the real notebook and workspace IDs, and binds the Direct Lake model to the lakehouse's SQL endpoint, per environment, so nobody re-links anything by hand. Then run `pl_monthly_full` once with `date_from=2026-01-01` to backfill, and schedule `pl_daily`.
 
 - **No secrets in Git.** The variable library holds settings only (a test enforces it). Source credentials come from Key Vault via `KeyVaultUri` and `notebookutils.credentials.getSecret`.
 - **No default-lakehouse binding.** Notebooks resolve the lakehouse by name at runtime, so a Git sync into any workspace works unchanged.
-- **Power BI.** Build a Direct Lake semantic model on the `gold_` tables: `fact_worklog` → `dim_user`, `dim_project`, `dim_date` (mark as date table); `fact_assignment_month` → `dim_user`, `dim_deliverable`.
+- **Power BI.** `wl_model` is Direct Lake on the gold tables and `wl_report` reads it; both deploy with the rest (see below).
+
+## Power BI: semantic model and report
+
+`wl_model.SemanticModel` is a **Direct Lake** model on the gold tables, in TMDL, deployed with everything else:
+
+- **Star schema:** `Worklog`, `Capacity` and `Assignment` facts; `Date` (the marked date table), `User`, `Project`, `Account` and `Deliverable` dimensions; plus `Unmatched Workers` and `Non-loggers` for the review pages. Friendly names over the lakehouse tables, keys hidden, single-direction relationships.
+- **26 DAX measures** with descriptions, in display folders:
+
+| Folder | Measures |
+|---|---|
+| Time | Hours Logged · Billable Hours · Billable Share % |
+| Capacity | Capacity Hours · Utilization % (billable over capacity) |
+| Coverage | Expected People · Logging People · Coverage % · People Not Logging |
+| Identity · Timeliness | Unattributed Hours / Share % · Median Logging Delay · Logged Within 7 Days % |
+| Sold vs utilized | Assigned Hours · Sold Value (`SUMX` over assignments at each deliverable's rate) · Average Sold Rate · Sold Utilization % · Unused Sold Hours |
+| Time intelligence | Hours Logged PM / MoM % / YTD · Utilization % PM · Utilization Change (pts) |
+| Review | Worklist Hours · Worklist Entries · Days Without Logging |
+
+- **Generated from one definition** (`local/build_model.py`): the same tables, relationships and measures as Direct Lake for Fabric or as Import over local Parquet for Power BI Desktop. A test fails if the committed TMDL drifts from it.
+- **Verified:** `local/verify_model.py` runs every measure as a DAX query (through `pbi-cli`, against the Import copy in Power BI Desktop) and compares it with the same number computed independently in DuckDB, by month, by account and in total: **190 values, all equal.**
+
+`wl_report.Report` (PBIR) has four pages, one question each: **Overview**, **Time & coverage**, **Sold vs utilized** and **Review worklist** (the unmatched identities and the people not logging). A test checks that every field each visual uses exists in the model.
+
+```
+python run.py model --import          # regenerate the TMDL + a local Import copy over Parquet exports
+pbi connect -d localhost:<port>       # a blank Power BI Desktop; then: pbi database import-tmdl .lake/model_import/definition
+python local/verify_model.py          # DAX vs DuckDB
+```
 
 ### PySpark and Spark SQL
 
-The person-day rule, the SCD2 user history (Delta Lake `MERGE` API), the identity map and the ranked matching rules all run in Spark notebooks as well as in the Python ones ([ADR 0004](docs/decisions/0004-spark-shadow-path.md)). The CI job `spark-parity` runs both over a backfill plus four daily runs, with Java 17, Spark 3.5 and Delta 3.2 (the Fabric Runtime 1.3 versions), and requires zero differences. In Fabric, `pl_spark_shadow` runs the Spark notebooks and `nb_parity` after a daily run. The daily pipelines use the Python notebooks because the volume is small ([ADR 0001](docs/decisions/0001-python-notebooks-not-spark.md)); at larger volume the Spark notebooks take over without a rewrite.
+The person-day rule, the SCD2 user history (Delta Lake `MERGE` API), the identity map and the ranked matching rules all run in Spark notebooks as well as in the Python ones ([ADR 0004](docs/decisions/0004-spark-shadow-path.md)). The CI job `spark-parity` runs both over a backfill plus four daily runs, with Java 17, Spark 3.5 and Delta 3.2 (the Fabric Runtime 1.3 versions), and requires zero differences. `nb_spark_maintenance` tunes the Spark tables: `spark_silver_worklogs` is partitioned by work month, `OPTIMIZE` Z-orders silver by `worker_id, date` and the fact by `user_key, project_key` (with V-Order on Fabric), and `VACUUM` keeps 7 days of history; CI checks each operation in the Delta history and that parity still holds afterwards. In Fabric, `pl_spark_shadow` runs the Spark notebooks, `nb_parity` and the maintenance after a daily run. The daily pipelines use the Python notebooks because the volume is small ([ADR 0001](docs/decisions/0001-python-notebooks-not-spark.md)); at larger volume the Spark notebooks take over without a rewrite.
 
 ## Repo layout
 

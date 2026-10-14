@@ -37,3 +37,14 @@ find_replace:
       dev: "$items.Notebook.nb_spark_maintenance.id"
       prod: "$items.Notebook.nb_spark_maintenance.id"
     item_type: "DataPipeline"
+  # Direct Lake: bind the semantic model to the lakehouse's SQL analytics endpoint in each environment
+  - find_value: "__SQL_ENDPOINT__"
+    replace_value:
+      dev: "$items.Lakehouse.wl_lakehouse.$sqlendpoint"
+      prod: "$items.Lakehouse.wl_lakehouse.$sqlendpoint"
+    item_type: "SemanticModel"
+  - find_value: "__SQL_ENDPOINT_ID__"
+    replace_value:
+      dev: "$items.Lakehouse.wl_lakehouse.$sqlendpointid"
+      prod: "$items.Lakehouse.wl_lakehouse.$sqlendpointid"
+    item_type: "SemanticModel"
