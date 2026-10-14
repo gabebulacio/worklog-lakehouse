@@ -39,3 +39,6 @@ Debug a single layer with `python run.py nb <notebook> run_id=debug ...`. Notebo
 
 ## Tests
 `python run.py test` = pytest (static item checks + end-to-end on temp lakehouses, ~80 s) + ruff. The end-to-end suite asserts replay equivalence (daily incrementals ≈ one full extract except whole deleted days), idempotent bronze, stable registry keys, no-op SCD2 reruns, and that ambiguous names are never guessed.
+
+## Spark shadow path
+`pl_spark_shadow` (in Fabric) runs `nb_spark_silver_users` → `nb_spark_silver_worklogs` → `nb_spark_gold_fact` → `nb_parity` after a primary run. `ops_parity_results` has one row per table pair per run (`only_python`, `only_spark`, `equal`). Locally `tests/test_spark_parity.py` skips without Java; CI's `spark-parity` job runs it. To debug a parity failure, compare the pair in DuckDB: `python run.py sql "select * from silver_worklogs except select * from spark_silver_worklogs"` (pick the compared columns from `PAIRS` in `nb_parity`). That only works on a lakehouse where the Spark notebooks have run, i.e. in Fabric or a Linux machine with Java.

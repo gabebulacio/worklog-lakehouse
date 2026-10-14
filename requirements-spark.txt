@@ -1,0 +1,3 @@
+# Spark shadow path (Java required): CI job spark-parity, Fabric Runtime 1.3 = Spark 3.5 + Delta 3.2
+pyspark==3.5.3
+delta-spark==3.2.1

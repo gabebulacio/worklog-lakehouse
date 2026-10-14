@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "pl_spark_shadow",
+    "description": "Spark shadow run: the three Spark notebooks, then nb_parity. Run after a primary run to prove the Spark port is equivalent."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "02fb4e03-7f8c-499c-81b3-4ef1fededa67"
+  }
+}

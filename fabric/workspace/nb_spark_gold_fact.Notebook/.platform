@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_spark_gold_fact",
+    "description": "Spark shadow path: worklog attribution and fact table in Spark SQL, writes spark_gold_fact_worklog."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ab56b2e6-4fdc-4972-af9f-117893f58a52"
+  }
+}

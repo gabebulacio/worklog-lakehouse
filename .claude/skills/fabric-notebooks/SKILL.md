@@ -48,3 +48,21 @@ Use `write_table`, not raw `write_deltalake`. Overwrite for rebuilt tables (silv
 - `wl_settings.VariableLibrary/variables.json`: settings only. **Never a secret**; credentials go through `secret()` and Key Vault (tested). A new variable needs `name`, `note`, `type` (`String|Integer|Number|Boolean`) and `value`.
 
 Finish with `python run.py test` (the `lakehouse-run` skill covers reading failures).
+
+## Spark notebooks (the shadow path)
+`nb_spark_*` are Fabric **Spark** notebooks: kernel_info `"name": "synapse_pyspark"` and `"language_group": "synapse_pyspark"` after every cell. Their setup cell comes from `fabric/shared/bootstrap_spark.py` (`python run.py sync` picks the right file from the marker line). Fabric provides `spark` as a global; locally `local/fabric_local.py` creates a SparkSession with Delta only for these notebooks, which needs Java plus `requirements-spark.txt`. **This machine has neither, so Spark code is verified in CI (`spark-parity`)**: say that plainly instead of claiming it works.
+
+DuckDB → Spark SQL when porting:
+| DuckDB | Spark SQL |
+|---|---|
+| `distinct on (k) ... order by x` | `row_number() over (partition by k order by x)` + `where rn = 1` |
+| `qualify ...` | subquery + `where rn = 1` |
+| `select * exclude (c)` | DataFrame `.drop("c")` |
+| `try_strptime(s, fmt)` | `to_timestamp(s, fmt)` with `spark.sql.legacy.timeParserPolicy=CORRECTED` (bootstrap sets it) |
+| `unnest(string_split(s, ';'))` | `explode(split(s, ';'))` |
+| `string_agg(distinct x, ', ')` | `concat_ws(', ', sort_array(collect_set(x)))` |
+| `anti join` | `left anti join` |
+| latest file: `order by ... limit 1` | `max_by(_source_file, struct(_extracted_at, _source_file))` |
+Backtick columns that collide with keywords (`` `User` ``, `` `Day` ``, `` `key` ``). Use raw strings (`r"""..."""`) for SQL with regex backslashes. Materialize (`.localCheckpoint()`) any MERGE source that reads the table being merged into.
+
+A logic change in a Python silver notebook or the fact attribution needs the same change in its Spark port, and `nb_parity` must still compare the changed columns.

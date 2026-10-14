@@ -27,7 +27,7 @@ python run.py setup      # .venv + deltalake, duckdb, pandas, pyarrow
 python run.py demo       # backfill 2026 (full run), then 7 daily incremental runs, ~90 s
 python run.py tables     # row counts of all 28 tables
 python run.py sql "select * from gold_mart_coverage_month"
-python run.py test       # 35 tests + ruff
+python run.py test       # item checks + end-to-end runs + ruff (Spark parity runs in CI)
 ```
 
 Other commands: `python run.py day` (next daily run), `full` (monthly full run), `nb <notebook> k=v` (one notebook), `export` (.ipynb copies for manual import). The lakehouse is `.lake/wl_lakehouse/` with `Tables/` (Delta) and `Files/` (landing, config), the same layout as OneLake.
@@ -59,11 +59,13 @@ Then `python run.py day`: the warning clears and those 376 entries are attribute
 | Gold | `nb_gold` | Append-only project registry (keys never change) → star schema with unknown members, CRM-based sold vs utilized (calendar-day proration × allocation), coverage, logging delay, non-loggers and the unmatched worklist. |
 | Quality | `nb_quality` | 18 SQL checks per run → `ops_quality_results`: uniqueness, ranges, fact ↔ silver reconciliation, foreign keys, SCD2 invariants, registry stability across Delta versions (time travel), unprocessed files, attribution share, coverage. Any **error** fails the run. |
 | Orchestration | `nb_orchestrator`, `pl_daily`, `pl_monthly_full` | One `run_id` per run, steps called by notebook name, each step logged to `ops_run_log`. |
+| Spark shadow | `nb_spark_silver_worklogs`, `nb_spark_silver_users`, `nb_spark_gold_fact`, `nb_parity`, `pl_spark_shadow` | PySpark / Spark SQL ports of the person-day rule, the SCD2 `MERGE` and the matching rules, writing `spark_*` tables; `nb_parity` fails the run if they differ from the Python path in any row. |
 
 Design decisions are in [docs/decisions/](docs/decisions/):
 - [0001](docs/decisions/0001-python-notebooks-not-spark.md): Python notebooks (DuckDB + delta-rs), not Spark
 - [0002](docs/decisions/0002-silver-recompute-person-day-rule.md): recompute silver with the person-day rule instead of an incremental MERGE
 - [0003](docs/decisions/0003-clean-room-synthetic-rebuild.md): clean-room rebuild on synthetic sources
+- [0004](docs/decisions/0004-spark-shadow-path.md): a Spark shadow path, proven equal in CI
 
 ### Identity resolution: attribution order
 
@@ -89,11 +91,15 @@ python -m pip install fabric-cicd azure-identity
 python fabric/deploy.py --workspace-id <GUID> --environment dev
 ```
 
-This publishes the lakehouse, variable library, 7 notebooks and 2 pipelines in place, matched by `logicalId`. `parameter.yml` swaps the pipelines' sentinel IDs for the real orchestrator and workspace IDs per environment, so nobody re-links activities by hand. Then run `pl_monthly_full` once with `date_from=2026-01-01` to backfill, and schedule `pl_daily`.
+This publishes the lakehouse, variable library, 11 notebooks (7 Python, 3 Spark, plus `nb_parity`) and 3 pipelines in place, matched by `logicalId`. `parameter.yml` swaps the pipelines' sentinel IDs for the real orchestrator and workspace IDs per environment, so nobody re-links activities by hand. Then run `pl_monthly_full` once with `date_from=2026-01-01` to backfill, and schedule `pl_daily`.
 
 - **No secrets in Git.** The variable library holds settings only (a test enforces it). Source credentials come from Key Vault via `KeyVaultUri` and `notebookutils.credentials.getSecret`.
 - **No default-lakehouse binding.** Notebooks resolve the lakehouse by name at runtime, so a Git sync into any workspace works unchanged.
 - **Power BI.** Build a Direct Lake semantic model on the `gold_` tables: `fact_worklog` → `dim_user`, `dim_project`, `dim_date` (mark as date table); `fact_assignment_month` → `dim_user`, `dim_deliverable`.
+
+### Spark shadow path
+
+The primary path is Python notebooks ([ADR 0001](docs/decisions/0001-python-notebooks-not-spark.md)). The logic that matters is also ported to Spark ([ADR 0004](docs/decisions/0004-spark-shadow-path.md)), and the CI job `spark-parity` proves the two produce identical tables: Java 17, Spark 3.5 and Delta 3.2, the Fabric Runtime 1.3 versions, over a backfill plus four daily runs. In Fabric, run `pl_spark_shadow` after a primary run. To run them locally, install Java 17 and `pip install -r requirements-spark.txt`; `python run.py test` then includes the parity test.
 
 ## Repo layout
 

@@ -12,6 +12,9 @@ local filesystem:
   notebookutils.notebook.run / exit                -> runs the sibling notebook in-process
   notebookutils.credentials.getToken / getSecret   -> dummy token / environment variable
 
+Spark notebooks (kernel `synapse_pyspark`) also get the `spark` global Fabric provides: a local
+SparkSession with Delta Lake. That needs Java and `pip install -r requirements-spark.txt`; CI has both.
+
 Nothing here is imported by the notebooks themselves, so what runs locally is exactly
 what gets deployed.
 """
@@ -30,6 +33,7 @@ PROJECT = Path(__file__).resolve().parents[1]
 WORKSPACE = PROJECT / "fabric" / "workspace"
 DEFAULT_LAKE_ROOT = PROJECT / ".lake"
 
+SPARK_KERNEL = '"name": "synapse_pyspark"'
 MARKER = re.compile(r"^# (PARAMETERS CELL|CELL|MARKDOWN|METADATA) \*{20}\s*$")
 
 
@@ -79,6 +83,28 @@ class LocalFabric:
         self.quiet = quiet
         self.mounts: dict[str, str] = {}
         self.module = self._build_module()
+        self._spark = None
+
+    # ---- Spark (only for synapse_pyspark notebooks) -----------------------------------
+    @property
+    def spark(self):
+        if self._spark is None:
+            try:
+                from delta import configure_spark_with_delta_pip
+                from pyspark.sql import SparkSession
+            except ImportError as exc:
+                raise RuntimeError("Spark notebooks need Java and: pip install -r requirements-spark.txt "
+                                   "(CI runs them; the Python notebooks don't need Spark)") from exc
+            builder = (
+                SparkSession.builder.master("local[2]").appName("worklog-lakehouse")
+                .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+                .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+                .config("spark.sql.shuffle.partitions", "4")
+                .config("spark.ui.enabled", "false")
+            )
+            self._spark = configure_spark_with_delta_pip(builder).getOrCreate()
+            self._spark.sparkContext.setLogLevel("ERROR")
+        return self._spark
 
     # ---- notebookutils stand-in -------------------------------------------------
     def _build_module(self):
@@ -128,9 +154,12 @@ class LocalFabric:
     def run(self, name: str, params: dict | None = None):
         """Execute a notebook by display name; returns its notebookutils.notebook.exit() value."""
         path = WORKSPACE / f"{name}.Notebook" / "notebook-content.py"
-        cells = parse_cells(path.read_text(encoding="utf-8"))
+        source = path.read_text(encoding="utf-8")
+        cells = parse_cells(source)
         params = dict(params or {})
         ns: dict = {"__name__": "__notebook__"}
+        if SPARK_KERNEL in source:
+            ns["spark"] = self.spark
         previous = sys.modules.get("notebookutils")
         sys.modules["notebookutils"] = self.module
         t0 = time.perf_counter()

@@ -1,0 +1,96 @@
+{
+  "properties": {
+    "description": "Spark shadow run after a primary run. Notebook and workspace IDs are sentinels that parameter.yml swaps at deploy time.",
+    "activities": [
+      {
+        "name": "nb_spark_silver_users",
+        "type": "TridentNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "33333333-3333-3333-3333-333333333333",
+          "workspaceId": "22222222-2222-2222-2222-222222222222",
+          "parameters": {}
+        }
+      },
+      {
+        "name": "nb_spark_silver_worklogs",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "nb_spark_silver_users",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "44444444-4444-4444-4444-444444444444",
+          "workspaceId": "22222222-2222-2222-2222-222222222222",
+          "parameters": {}
+        }
+      },
+      {
+        "name": "nb_spark_gold_fact",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "nb_spark_silver_worklogs",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "55555555-5555-5555-5555-555555555555",
+          "workspaceId": "22222222-2222-2222-2222-222222222222",
+          "parameters": {}
+        }
+      },
+      {
+        "name": "nb_parity",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "nb_spark_gold_fact",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "66666666-6666-6666-6666-666666666666",
+          "workspaceId": "22222222-2222-2222-2222-222222222222",
+          "parameters": {}
+        }
+      }
+    ]
+  }
+}

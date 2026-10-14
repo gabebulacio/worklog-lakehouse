@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_spark_silver_users",
+    "description": "Spark shadow path: SCD2 user history with the Delta MERGE API and the identity map, writes spark_silver_user_*."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d0d9365e-5000-41cc-98d8-75c089550e72"
+  }
+}
