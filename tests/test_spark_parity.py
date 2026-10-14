@@ -78,11 +78,15 @@ def test_optimize_z_ordered_the_table(maintained_lake, table, zorder):
     assert all(c in ops[0]["operationParameters"]["zOrderBy"] for c in zorder)
 
 
-def test_vacuum_ran_and_files_were_compacted(maintained_lake):
-    ops = {h["operation"] for h in history(maintained_lake, "spark_silver_user_history")}
-    assert {"OPTIMIZE", "VACUUM START", "VACUUM END"} <= ops
+def test_vacuum_ran_and_no_table_grew(maintained_lake):
     rows = maintained_lake.sql("select table_name, files_before, files_after from m", m="ops_maintenance_log")
-    assert len(rows) == 4 and all(after <= before for _, before, after in rows)
+    assert len(rows) == 4
+    for table, before, after in rows:
+        ops = {h["operation"] for h in history(maintained_lake, table)}
+        assert {"VACUUM START", "VACUUM END"} <= ops, f"{table} was not vacuumed"
+        assert after <= before, f"{table} has more files after OPTIMIZE"
+        if after < before:  # Delta only commits an OPTIMIZE when it rewrote files; a compact table is a no-op
+            assert "OPTIMIZE" in ops, f"{table} lost files without an OPTIMIZE commit"
 
 
 def test_maintenance_does_not_change_the_data(maintained_lake):
