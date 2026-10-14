@@ -1,4 +1,4 @@
-# 0004 · A Spark shadow path, proven equal in CI
+# 0004 · A Spark path, proven identical in CI
 
 **Status:** accepted · 2026-10-14
 
