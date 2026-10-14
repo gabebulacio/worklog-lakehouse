@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_spark_maintenance",
+    "description": "Spark table maintenance: OPTIMIZE with Z-ORDER (and V-Order on Fabric), VACUUM, logged to ops_maintenance_log."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "626b0a65-ab5c-4d7e-9963-57c4387c0682"
+  }
+}

@@ -23,12 +23,16 @@ def var(name, default=None):
 
 LAKEHOUSE = var("LakehouseName", "wl_lakehouse")
 BASE = notebookutils.lakehouse.getWithProperties(LAKEHOUSE)["properties"]["abfsPath"]
+ON_FABRIC = BASE.startswith("abfss://")
 TABLES = f"{BASE}/Tables"
 FILES = f"{BASE}/Files"
 
 # Same semantics as the Python notebooks: UTC timestamps, and an unparseable timestamp is NULL, not an error.
 spark.conf.set("spark.sql.session.timeZone", "UTC")
 spark.conf.set("spark.sql.legacy.timeParserPolicy", "CORRECTED")
+if ON_FABRIC:
+    # V-Order: Fabric's read-optimized Parquet layout (Direct Lake and the SQL endpoint read it fastest).
+    spark.conf.set("spark.sql.parquet.vorder.default", "true")
 
 
 def table_exists(name):
@@ -45,10 +49,12 @@ def view(**tables):
         (read(source) if isinstance(source, str) else source).createOrReplaceTempView(alias)
 
 
-def write(df, name, mode="overwrite"):
-    (df.write.format("delta").mode(mode)
-       .option("overwriteSchema" if mode == "overwrite" else "mergeSchema", "true")
-       .save(f"{TABLES}/{name}"))
+def write(df, name, mode="overwrite", partition_by=None):
+    writer = (df.write.format("delta").mode(mode)
+              .option("overwriteSchema" if mode == "overwrite" else "mergeSchema", "true"))
+    if partition_by:
+        writer = writer.partitionBy(*partition_by)
+    writer.save(f"{TABLES}/{name}")
     rows = read(name).count() if mode == "overwrite" else df.count()
     print(f"{name}: {rows:,} rows ({mode})")
     return rows
