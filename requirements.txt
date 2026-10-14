@@ -1,0 +1,11 @@
+# Same libraries the Fabric Python notebook runtime ships, so local runs match the service.
+deltalake>=0.25
+duckdb>=1.1
+pandas>=2.2
+pyarrow>=17
+pyyaml>=6
+pytz>=2024.1   # DuckDB needs it to return timezone-aware timestamps
+# dev
+pytest>=8
+ruff>=0.6
+# deploy only (python fabric/deploy.py): pip install fabric-cicd azure-identity

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "pl_daily",
+    "description": "Daily: orchestrator in incremental mode (changed person-days in the last 48 h)."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "63b69c48-0222-43e7-8d11-5d48e85f04dc"
+  }
+}

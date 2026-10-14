@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_silver_worklogs",
+    "description": "Silver: one canonical worklog table from both sources, rebuilt from bronze by the latest-extract-per-person-day rule."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "014c60f2-06aa-4434-8ef2-8a510dc5c05a"
+  }
+}

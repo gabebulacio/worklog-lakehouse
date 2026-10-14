@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "VariableLibrary",
+    "displayName": "wl_settings",
+    "description": "Pipeline settings. Holds no secrets: credentials are read from Azure Key Vault (KeyVaultUri)."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "6085e566-36c8-47b1-9468-d371becc202d"
+  }
+}

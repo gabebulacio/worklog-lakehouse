@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_gold",
+    "description": "Gold: star schema (dims, facts) and marts for Power BI Direct Lake."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9623df48-2bd6-403d-bb1f-12ea4902534d"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_bronze_ingest",
+    "description": "Bronze: ingests every new landing file into bronze_<system>_<entity> (append-only, all-string, with lineage)."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "6eb20569-1971-4b82-b8f1-93c7b54f8864"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "properties": {
+    "description": "Monthly full run over the trailing quarter. Notebook and workspace IDs are sentinels that fabric/parameter.yml swaps at deploy time.",
+    "activities": [
+      {
+        "name": "Run orchestrator (full)",
+        "type": "TridentNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 300,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "11111111-1111-1111-1111-111111111111",
+          "workspaceId": "22222222-2222-2222-2222-222222222222",
+          "parameters": {
+            "mode": {
+              "value": "full",
+              "type": "string"
+            },
+            "land_synthetic": {
+              "value": "true",
+              "type": "bool"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

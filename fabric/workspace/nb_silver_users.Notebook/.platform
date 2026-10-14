@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_silver_users",
+    "description": "Silver: user history (SCD2 via Delta MERGE) and the identity map used to attribute worklogs."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "396ec92c-d658-4d85-99ba-ec976e4bcd7c"
+  }
+}

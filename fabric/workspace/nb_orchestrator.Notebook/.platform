@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_orchestrator",
+    "description": "Runs the whole sequence by notebook name, with one run_id, and logs each step to ops_run_log."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d2190620-e6e4-4d1b-8b1d-aef21aa28cbd"
+  }
+}

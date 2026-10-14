@@ -1,0 +1,12 @@
+target-version = "py311"  # the Fabric Python notebook runtime
+line-length = 120
+extend-exclude = [".lake", "fabric/ipynb_export"]
+
+[lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "UP017"]  # timezone.utc reads clearer than datetime.UTC
+
+[lint.per-file-ignores]
+# Notebooks: later cells import what they need (E402); the shared bootstrap imports more than each notebook uses (F401).
+"fabric/workspace/*.Notebook/notebook-content.py" = ["E402", "F401", "I001"]
+"fabric/shared/bootstrap.py" = ["F401"]

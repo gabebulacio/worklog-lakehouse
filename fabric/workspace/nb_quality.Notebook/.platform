@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_quality",
+    "description": "Data-quality checks across layers; writes ops_quality_results and fails the run on any error-level check."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "2b1da323-83a8-404d-bb9d-3257f73032ad"
+  }
+}

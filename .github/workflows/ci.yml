@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lakehouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11" # the Fabric Python notebook runtime
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Lint
+        run: ruff check .
+      - name: Notebook bootstrap copies are current
+        run: python run.py sync && git diff --exit-code fabric/workspace
+      - name: Fabric items + end-to-end medallion runs (local Delta lakehouse)
+        run: python -m pytest -q tests

@@ -1,0 +1,7 @@
+# local lakehouse and generated copies
+.lake/
+fabric/ipynb_export/
+.venv/
+.pytest_cache/
+.ruff_cache/
+__pycache__/

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_land_synthetic",
+    "description": "Demo source systems: writes the extracts the four source APIs would return into Files/landing. Replaced by Copy jobs in production."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "4192afb1-440d-476b-9e8d-1c3edaaf174d"
+  }
+}

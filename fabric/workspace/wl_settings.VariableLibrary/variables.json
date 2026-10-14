@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/variables/1.0.0/schema.json",
+  "variables": [
+    {
+      "name": "LakehouseName",
+      "note": "Display name of the lakehouse. Notebooks resolve it at runtime, so no default-lakehouse binding is needed.",
+      "type": "String",
+      "value": "wl_lakehouse"
+    },
+    {
+      "name": "DefaultDomain",
+      "note": "Primary mail domain. Identity fallback: localpart@DefaultDomain.",
+      "type": "String",
+      "value": "lumen.studio"
+    },
+    {
+      "name": "AssignedHoursPerMonth",
+      "note": "Hours one full-time month of a CRM assignment represents (sold vs utilized).",
+      "type": "Number",
+      "value": 160
+    },
+    {
+      "name": "NonLoggerWindowDays",
+      "note": "Expected users with no worklog in this many trailing days appear in gold_mart_nonloggers.",
+      "type": "Integer",
+      "value": 30
+    },
+    {
+      "name": "FullWindowMonths",
+      "note": "Full mode re-extracts from the first day of the month this many months back.",
+      "type": "Integer",
+      "value": 3
+    },
+    {
+      "name": "MaxUnmatchedHoursShare",
+      "note": "Quality warning when more than this share of hours cannot be attributed to a user.",
+      "type": "Number",
+      "value": 0.02
+    },
+    {
+      "name": "SyntheticSeed",
+      "note": "Seed for nb_land_synthetic. Same seed, same synthetic world.",
+      "type": "Integer",
+      "value": 42
+    },
+    {
+      "name": "KeyVaultUri",
+      "note": "https://<vault>.vault.azure.net/ - source-system credentials are read from here with notebookutils.credentials.getSecret. Never put a secret in this library.",
+      "type": "String",
+      "value": ""
+    }
+  ]
+}
