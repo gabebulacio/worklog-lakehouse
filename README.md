@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/gabebulacio/worklog-lakehouse/actions/workflows/ci.yml/badge.svg)](https://github.com/gabebulacio/worklog-lakehouse/actions/workflows/ci.yml) · [Case study](https://gabrielbulacio.com/projects/worklog-lakehouse)
 
-> Rebuilt from scratch, on synthetic data, from problems I solved running a production timesheet pipeline: identity resolution across systems, late edits and deletions, keys finance relies on. None of the original code, data or names are here. The company is fictional, and every person, client and email is synthetic.
+> Rebuilt from scratch, on synthetic data, from a timesheet platform I run in production on Microsoft Fabric: identity resolution across systems, late edits and deletions, keys finance relies on. None of the original code, data or names are here. The company is fictional, and every person, client and email is synthetic.
 
 **Two time-tracking systems, a user directory and a CRM, consolidated into a governed star schema for Power BI: who logged what, against which client, compared with what was sold.** Built as Fabric items (Lakehouse, Python and Spark notebooks, Data Pipelines, Variable Library) in Git format, deployable with `fabric-cicd`. The core logic exists twice, in Python notebooks and in PySpark / Spark SQL, and a parity gate in CI proves both produce identical tables. The Python notebooks also run locally against a folder-based Delta lakehouse, so you can clone it and see every table in about two minutes.
 
