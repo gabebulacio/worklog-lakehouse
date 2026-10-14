@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_parity",
+    "description": "Compares the Spark shadow tables with the Python path and fails on any difference."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "0550d54a-3ed0-4165-abfc-0a8bd9adad95"
+  }
+}

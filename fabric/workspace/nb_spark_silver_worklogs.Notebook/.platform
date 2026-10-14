@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_spark_silver_worklogs",
+    "description": "Spark shadow path: PySpark/Spark SQL port of nb_silver_worklogs (person-day rule), writes spark_silver_worklogs."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "1058b1f1-4803-459f-b6bb-aed0931b1822"
+  }
+}

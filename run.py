@@ -29,8 +29,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 VENV_PY = ROOT / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 WORKSPACE = ROOT / "fabric" / "workspace"
-BOOTSTRAP = ROOT / "fabric" / "shared" / "bootstrap.py"
-BOOTSTRAP_MARK = "# --- shared bootstrap:"
+# Marker line that opens each notebook's shared setup cell -> the file it is copied from.
+BOOTSTRAPS = {
+    "# --- shared bootstrap:": ROOT / "fabric" / "shared" / "bootstrap.py",
+    "# --- shared spark bootstrap:": ROOT / "fabric" / "shared" / "bootstrap_spark.py",
+}
 SEED_FROM, SEED_TO = "2026-01-01", "2026-09-30"
 
 
@@ -149,16 +152,17 @@ def query():
 
 
 def sync():
-    """Rewrite the bootstrap cell of every notebook from fabric/shared/bootstrap.py."""
-    body = BOOTSTRAP.read_text(encoding="utf-8").rstrip("\n")
+    """Rewrite the shared setup cell of every notebook from fabric/shared/bootstrap*.py."""
     changed = []
     for nb_file in sorted(WORKSPACE.glob("*.Notebook/notebook-content.py")):
         text = nb_file.read_text(encoding="utf-8")
-        start = text.index(BOOTSTRAP_MARK)
+        mark = next(m for m in BOOTSTRAPS if m in text)
+        body = BOOTSTRAPS[mark].read_text(encoding="utf-8").rstrip("\n")
+        start = text.index(mark)
         end = text.index("\n# METADATA ********************", start)
         new = text[:start] + body + "\n" + text[end:]
         if new != text:
-            nb_file.write_text(new, encoding="utf-8")
+            nb_file.write_text(new, encoding="utf-8", newline="\n")
             changed.append(nb_file.parent.name)
     print("bootstrap synced:", ", ".join(changed) or "all notebooks already current")
 

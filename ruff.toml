@@ -10,3 +10,6 @@ ignore = ["E501", "UP017"]  # timezone.utc reads clearer than datetime.UTC
 # Notebooks: later cells import what they need (E402); the shared bootstrap imports more than each notebook uses (F401).
 "fabric/workspace/*.Notebook/notebook-content.py" = ["E402", "F401", "I001"]
 "fabric/shared/bootstrap.py" = ["F401"]
+# Spark notebooks: Fabric injects the `spark` session as a global (F821).
+"fabric/workspace/nb_spark_*.Notebook/notebook-content.py" = ["E402", "F401", "I001", "F821"]
+"fabric/shared/bootstrap_spark.py" = ["F401", "F821"]

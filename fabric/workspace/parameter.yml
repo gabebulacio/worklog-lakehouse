@@ -12,3 +12,23 @@ find_replace:
       dev: "$workspace.id"
       prod: "$workspace.id"
     item_type: "DataPipeline"
+  - find_value: "33333333-3333-3333-3333-333333333333"
+    replace_value:
+      dev: "$items.Notebook.nb_spark_silver_users.id"
+      prod: "$items.Notebook.nb_spark_silver_users.id"
+    item_type: "DataPipeline"
+  - find_value: "44444444-4444-4444-4444-444444444444"
+    replace_value:
+      dev: "$items.Notebook.nb_spark_silver_worklogs.id"
+      prod: "$items.Notebook.nb_spark_silver_worklogs.id"
+    item_type: "DataPipeline"
+  - find_value: "55555555-5555-5555-5555-555555555555"
+    replace_value:
+      dev: "$items.Notebook.nb_spark_gold_fact.id"
+      prod: "$items.Notebook.nb_spark_gold_fact.id"
+    item_type: "DataPipeline"
+  - find_value: "66666666-6666-6666-6666-666666666666"
+    replace_value:
+      dev: "$items.Notebook.nb_parity.id"
+      prod: "$items.Notebook.nb_parity.id"
+    item_type: "DataPipeline"
