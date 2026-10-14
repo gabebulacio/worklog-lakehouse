@@ -1,6 +1,6 @@
 {
   "properties": {
-    "description": "Spark shadow run after a primary run. Notebook and workspace IDs are sentinels that parameter.yml swaps at deploy time.",
+    "description": "Spark run after a primary run: the three Spark notebooks, the parity gate, then table maintenance (OPTIMIZE / Z-ORDER / V-Order, VACUUM). IDs are sentinels that parameter.yml swaps at deploy time.",
     "activities": [
       {
         "name": "nb_spark_silver_users",
@@ -89,6 +89,35 @@
           "notebookId": "66666666-6666-6666-6666-666666666666",
           "workspaceId": "22222222-2222-2222-2222-222222222222",
           "parameters": {}
+        }
+      },
+      {
+        "name": "nb_spark_maintenance",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "nb_parity",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "notebookId": "77777777-7777-7777-7777-777777777777",
+          "workspaceId": "22222222-2222-2222-2222-222222222222",
+          "parameters": {
+            "vacuum_retain_hours": {
+              "value": "168",
+              "type": "int"
+            }
+          }
         }
       }
     ]

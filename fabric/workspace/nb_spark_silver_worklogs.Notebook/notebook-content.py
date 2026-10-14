@@ -17,6 +17,8 @@
 # keep the rows of the latest extract that contains it, unless a later full extract covers that
 # date without it. `nb_parity` checks the result is identical to the Python path.
 #
+# The table is partitioned by `work_month`; `nb_spark_maintenance` compacts and Z-orders it.
+#
 # What changes in the port: `distinct on` and `qualify` become `row_number()` windows, `exclude`
 # becomes `.drop()`, and three timestamp formats go through `to_timestamp` with the CORRECTED
 # parser policy (unparseable -> NULL, as `try_strptime` does in DuckDB).
@@ -59,12 +61,16 @@ def var(name, default=None):
 
 LAKEHOUSE = var("LakehouseName", "wl_lakehouse")
 BASE = notebookutils.lakehouse.getWithProperties(LAKEHOUSE)["properties"]["abfsPath"]
+ON_FABRIC = BASE.startswith("abfss://")
 TABLES = f"{BASE}/Tables"
 FILES = f"{BASE}/Files"
 
 # Same semantics as the Python notebooks: UTC timestamps, and an unparseable timestamp is NULL, not an error.
 spark.conf.set("spark.sql.session.timeZone", "UTC")
 spark.conf.set("spark.sql.legacy.timeParserPolicy", "CORRECTED")
+if ON_FABRIC:
+    # V-Order: Fabric's read-optimized Parquet layout (Direct Lake and the SQL endpoint read it fastest).
+    spark.conf.set("spark.sql.parquet.vorder.default", "true")
 
 
 def table_exists(name):
@@ -81,10 +87,12 @@ def view(**tables):
         (read(source) if isinstance(source, str) else source).createOrReplaceTempView(alias)
 
 
-def write(df, name, mode="overwrite"):
-    (df.write.format("delta").mode(mode)
-       .option("overwriteSchema" if mode == "overwrite" else "mergeSchema", "true")
-       .save(f"{TABLES}/{name}"))
+def write(df, name, mode="overwrite", partition_by=None):
+    writer = (df.write.format("delta").mode(mode)
+              .option("overwriteSchema" if mode == "overwrite" else "mergeSchema", "true"))
+    if partition_by:
+        writer = writer.partitionBy(*partition_by)
+    writer.save(f"{TABLES}/{name}")
     rows = read(name).count() if mode == "overwrite" else df.count()
     print(f"{name}: {rows:,} rows ({mode})")
     return rows
@@ -97,6 +105,8 @@ def write(df, name, mode="overwrite"):
 # META }
 
 # CELL ********************
+
+from pyspark.sql import functions as F
 
 TS = "coalesce(to_timestamp({c}, \"yyyy-MM-dd'T'HH:mm:ss'Z'\"), to_timestamp({c}, 'MM/dd/yyyy HH:mm:ss'), to_timestamp({c}, 'yyyy-MM-dd HH:mm:ss.SSS'))"
 
@@ -162,7 +172,9 @@ silver = spark.sql("""
     select *, row_number() over (partition by source, external_id order by _extracted_at desc, _source_file desc) as rn
     from kept
 """).where("rn = 1").drop("rn")
-rows = write(silver, "spark_silver_worklogs")
+# Partitioned by work month: daily runs rewrite recent months, and month filters prune whole folders.
+silver = silver.withColumn("work_month", F.trunc("date", "month"))
+rows = write(silver, "spark_silver_worklogs", partition_by=["work_month"])
 notebookutils.notebook.exit(json.dumps({"run_id": run_id, "rows": rows}))
 
 # METADATA ********************

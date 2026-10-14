@@ -32,3 +32,8 @@ find_replace:
       dev: "$items.Notebook.nb_parity.id"
       prod: "$items.Notebook.nb_parity.id"
     item_type: "DataPipeline"
+  - find_value: "77777777-7777-7777-7777-777777777777"
+    replace_value:
+      dev: "$items.Notebook.nb_spark_maintenance.id"
+      prod: "$items.Notebook.nb_spark_maintenance.id"
+    item_type: "DataPipeline"
