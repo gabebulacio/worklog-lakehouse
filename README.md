@@ -2,9 +2,9 @@
 
 [![ci](https://github.com/gabebulacio/worklog-lakehouse/actions/workflows/ci.yml/badge.svg)](https://github.com/gabebulacio/worklog-lakehouse/actions/workflows/ci.yml) · [Case study](https://gabrielbulacio.com/projects/worklog-lakehouse)
 
-**Two time-tracking systems, a user directory and a CRM, consolidated into a governed star schema for Power BI: who logged what, against which client, compared with what was sold.** Built as Fabric items (Lakehouse, Notebooks, Data Pipelines, Variable Library) in Git format, deployable with `fabric-cicd`. The **same notebook files** also run locally against a folder-based Delta lakehouse, so you can clone it and see every table in about two minutes.
+> Rebuilt from scratch, on synthetic data, from problems I solved running a production timesheet pipeline: identity resolution across systems, late edits and deletions, keys finance relies on. None of the original code, data or names are here. The company is fictional, and every person, client and email is synthetic.
 
-> Portfolio project by Gabriel Bulacio. Every person, client and email is synthetic; the company is fictional. It is a clean-room rebuild of the kind of pipeline I've built at work, with none of that code or data.
+**Two time-tracking systems, a user directory and a CRM, consolidated into a governed star schema for Power BI: who logged what, against which client, compared with what was sold.** Built as Fabric items (Lakehouse, Notebooks, Data Pipelines, Variable Library) in Git format, deployable with `fabric-cicd`. The **same notebook files** also run locally against a folder-based Delta lakehouse, so you can clone it and see every table in about two minutes.
 
 ```
  SOURCES (synthetic APIs)              BRONZE (append-only, raw)        SILVER (canonical)                 GOLD (star + marts)
