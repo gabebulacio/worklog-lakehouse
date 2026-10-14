@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "nonloggers",
+  "position": {
+    "x": 650,
+    "y": 150,
+    "z": 4,
+    "height": 550,
+    "width": 610,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Non-loggers"
+                    }
+                  },
+                  "Property": "Person"
+                }
+              },
+              "queryRef": "Non-loggers.Person",
+              "nativeQueryRef": "Person",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Non-loggers"
+                    }
+                  },
+                  "Property": "Department"
+                }
+              },
+              "queryRef": "Non-loggers.Department",
+              "nativeQueryRef": "Department",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Non-loggers"
+                    }
+                  },
+                  "Property": "Manager"
+                }
+              },
+              "queryRef": "Non-loggers.Manager",
+              "nativeQueryRef": "Manager",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Non-loggers"
+                    }
+                  },
+                  "Property": "Days Without Logging"
+                }
+              },
+              "queryRef": "Non-loggers.Days Without Logging",
+              "nativeQueryRef": "Days Without Logging"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Expected people not logging'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "unmatched",
+  "position": {
+    "x": 20,
+    "y": 150,
+    "z": 3,
+    "height": 550,
+    "width": 610,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Unmatched Workers"
+                    }
+                  },
+                  "Property": "Source"
+                }
+              },
+              "queryRef": "Unmatched Workers.Source",
+              "nativeQueryRef": "Source",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Unmatched Workers"
+                    }
+                  },
+                  "Property": "Worker ID"
+                }
+              },
+              "queryRef": "Unmatched Workers.Worker ID",
+              "nativeQueryRef": "Worker ID",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Unmatched Workers"
+                    }
+                  },
+                  "Property": "Worker Email"
+                }
+              },
+              "queryRef": "Unmatched Workers.Worker Email",
+              "nativeQueryRef": "Worker Email",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Unmatched Workers"
+                    }
+                  },
+                  "Property": "Worklist Entries"
+                }
+              },
+              "queryRef": "Unmatched Workers.Worklist Entries",
+              "nativeQueryRef": "Worklist Entries"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Unmatched Workers"
+                    }
+                  },
+                  "Property": "Worklist Hours"
+                }
+              },
+              "queryRef": "Unmatched Workers.Worklist Hours",
+              "nativeQueryRef": "Worklist Hours"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Identities waiting on the mapping file'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

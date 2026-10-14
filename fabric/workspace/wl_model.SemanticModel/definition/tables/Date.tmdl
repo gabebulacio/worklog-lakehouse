@@ -1,0 +1,62 @@
+/// Calendar from the first worklog to the run date. Marked as the date table.
+table Date
+	dataCategory: Time
+	lineageTag: 0a72690f-7f3a-5eff-a586-45a5890e90fe
+
+	column Date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		isKey
+		lineageTag: 7e749145-8015-5745-b4c5-9057921d3295
+		summarizeBy: none
+		sourceColumn: date
+
+	column Year
+		dataType: int64
+		lineageTag: 4bf59ba9-ee5f-5296-b178-1a3ff45316ea
+		summarizeBy: sum
+		sourceColumn: year
+
+	column Quarter
+		dataType: int64
+		lineageTag: 00378492-fc50-56c0-835b-7a6adeb9726e
+		summarizeBy: sum
+		sourceColumn: quarter
+
+	column Month
+		dataType: dateTime
+		formatString: mmm
+		lineageTag: 3a1b37bd-c680-5f26-8663-27780fdb97ab
+		summarizeBy: none
+		sourceColumn: month
+
+	column 'Month Name'
+		dataType: string
+		lineageTag: 2e54b04d-5fd7-5da1-b0bc-26ea1ad027a4
+		summarizeBy: none
+		sourceColumn: month_name
+
+	column 'Week Start'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 9d4eaad6-b0e1-5fc9-94e2-c61126dfbf7e
+		summarizeBy: none
+		sourceColumn: week_start
+
+	column Weekday
+		dataType: int64
+		lineageTag: b4012014-5c1d-5157-a0a9-159a9363a317
+		summarizeBy: sum
+		sourceColumn: weekday
+
+	column 'Is Weekend'
+		dataType: boolean
+		lineageTag: 1872690e-591d-5d1a-95cb-b21c79ca11e0
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+	partition Date = entity
+		mode: directLake
+		source
+			entityName: gold_dim_date
+			expressionSource: DatabaseQuery

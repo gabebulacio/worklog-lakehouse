@@ -1,0 +1,41 @@
+/// CRM accounts, conformed: projects and sold assignments both point here. Internal projects have no account.
+table Account
+	lineageTag: a01b4e5d-e27a-5303-b409-180369fe3a74
+
+	column 'Account ID'
+		dataType: string
+		isKey
+		isHidden
+		lineageTag: 91caa25c-76b2-550c-9e8d-aaf3a491b45b
+		summarizeBy: none
+		sourceColumn: account_id
+
+	column Account
+		dataType: string
+		lineageTag: 58c7b116-8d9d-5dc7-8660-9d131b3a2550
+		summarizeBy: none
+		sourceColumn: account_name
+
+	column 'Account Owner'
+		dataType: string
+		lineageTag: 81b0a88d-f001-5040-b150-50ed2aef8f1f
+		summarizeBy: none
+		sourceColumn: account_owner
+
+	column 'Tracker Key'
+		dataType: string
+		lineageTag: 1c11b2e6-075d-5ded-8e7f-5b686a758a87
+		summarizeBy: none
+		sourceColumn: tracker_project_key
+
+	column 'Account State'
+		dataType: string
+		lineageTag: b5b0d4cc-10a5-564c-b9da-af3cdb4bea2b
+		summarizeBy: none
+		sourceColumn: account_state
+
+	partition Account = entity
+		mode: directLake
+		source
+			entityName: gold_dim_account
+			expressionSource: DatabaseQuery

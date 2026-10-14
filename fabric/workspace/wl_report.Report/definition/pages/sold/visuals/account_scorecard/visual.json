@@ -1,0 +1,114 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "account_scorecard",
+  "position": {
+    "x": 650,
+    "y": 150,
+    "z": 5,
+    "height": 550,
+    "width": 610,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Account"
+                    }
+                  },
+                  "Property": "Account"
+                }
+              },
+              "queryRef": "Account.Account",
+              "nativeQueryRef": "Account",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Assignment"
+                    }
+                  },
+                  "Property": "Sold Value"
+                }
+              },
+              "queryRef": "Assignment.Sold Value",
+              "nativeQueryRef": "Sold Value"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Assignment"
+                    }
+                  },
+                  "Property": "Average Sold Rate"
+                }
+              },
+              "queryRef": "Assignment.Average Sold Rate",
+              "nativeQueryRef": "Average Sold Rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Assignment"
+                    }
+                  },
+                  "Property": "Sold Utilization %"
+                }
+              },
+              "queryRef": "Assignment.Sold Utilization %",
+              "nativeQueryRef": "Sold Utilization %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Assignment"
+                    }
+                  },
+                  "Property": "Unused Sold Hours"
+                }
+              },
+              "queryRef": "Assignment.Unused Sold Hours",
+              "nativeQueryRef": "Unused Sold Hours"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Account scorecard'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

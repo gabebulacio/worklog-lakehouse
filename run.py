@@ -11,6 +11,7 @@
   python run.py sync                    copy fabric/shared/bootstrap.py into every notebook
   python run.py test                    pytest + ruff
   python run.py export                  write .ipynb copies to fabric/ipynb_export/ for manual import
+  python run.py model [--import]        regenerate the semantic model TMDL (--import: local Import copy too)
 
 Notebooks run unchanged from fabric/workspace/ through local/fabric_local.py.
 The lakehouse lives in .lake/ (WL_LAKE_ROOT to move it).
@@ -200,7 +201,11 @@ def export():
     print(f"wrote {out}")
 
 
-COMMANDS = {"setup": setup, "demo": demo, "seed": seed, "day": day, "full": full, "nb": nb, "tables": tables,
+def model():
+    subprocess.check_call([sys.executable, str(ROOT / "local" / "build_model.py"), *sys.argv[2:]])
+
+
+COMMANDS = {"model": model, "setup": setup, "demo": demo, "seed": seed, "day": day, "full": full, "nb": nb, "tables": tables,
             "sql": query, "sync": sync, "test": test, "export": export, "reset": reset}
 
 if __name__ == "__main__":

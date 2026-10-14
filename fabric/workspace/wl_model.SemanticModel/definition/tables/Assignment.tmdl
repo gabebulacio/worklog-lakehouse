@@ -1,0 +1,95 @@
+/// CRM assignments prorated to person x month: hours sold.
+table Assignment
+	lineageTag: 53453fb8-883a-5308-98f3-f27807161c2c
+
+	/// Hours sold through CRM assignments, prorated by month and allocation.
+	measure 'Assigned Hours' = SUM ( Assignment[Hours] )
+		formatString: #,##0
+		displayFolder: Sold vs utilized
+		lineageTag: ea93f497-a85d-54be-9bf1-0d4db0e14178
+
+	/// Assigned hours priced at each deliverable's rate.
+	measure 'Sold Value' = SUMX ( Assignment, Assignment[Hours] * RELATED ( Deliverable[Rate] ) )
+		formatString: $#,##0
+		displayFolder: Sold vs utilized
+		lineageTag: 5f9ee478-6371-556c-a3c0-5de422e6ed70
+
+	/// Sold value per assigned hour.
+	measure 'Average Sold Rate' = DIVIDE ( [Sold Value], [Assigned Hours] )
+		formatString: $#,##0.00
+		displayFolder: Sold vs utilized
+		lineageTag: da5e6c74-dfea-5ee5-969c-2a8c979327ee
+
+	/// Billable hours delivered over hours sold.
+	measure 'Sold Utilization %' = DIVIDE ( [Billable Hours], [Assigned Hours] )
+		formatString: 0.0%
+		displayFolder: Sold vs utilized
+		lineageTag: 91d84930-13b9-5527-81d1-a30d578e0321
+
+	/// Sold hours not covered by billable work (never negative).
+	measure 'Unused Sold Hours' = MAX ( 0, [Assigned Hours] - [Billable Hours] )
+		formatString: #,##0
+		displayFolder: Sold vs utilized
+		lineageTag: a30b6cda-c9da-52ad-84e8-1abd2ed4f7e6
+
+	column Month
+		dataType: dateTime
+		isHidden
+		lineageTag: 76bacb9f-5d75-5b26-8926-c9eac0c57f49
+		summarizeBy: none
+		sourceColumn: month
+
+	column 'User Key'
+		dataType: string
+		isHidden
+		lineageTag: b11f079a-9fd7-51fb-bffe-33d8ad746bf4
+		summarizeBy: none
+		sourceColumn: user_key
+
+	column 'Deliverable ID'
+		dataType: string
+		isHidden
+		lineageTag: 13436269-2277-5219-ae92-fad3eba975ef
+		summarizeBy: none
+		sourceColumn: deliverable_id
+
+	column 'Account ID'
+		dataType: string
+		isHidden
+		lineageTag: 6e8d913e-0eaf-59f5-907b-4769a2451419
+		summarizeBy: none
+		sourceColumn: account_id
+
+	column 'Assignment ID'
+		dataType: string
+		isHidden
+		lineageTag: 5d94b6ec-8992-5218-8f33-3afa43c18583
+		summarizeBy: none
+		sourceColumn: assignment_id
+
+	column Allocation
+		dataType: double
+		isHidden
+		lineageTag: 8e4f7996-0342-5256-b561-58dddfde234b
+		summarizeBy: sum
+		sourceColumn: allocation
+
+	column Fraction
+		dataType: double
+		isHidden
+		lineageTag: b1826937-852e-5c61-b315-78abacca5e33
+		summarizeBy: sum
+		sourceColumn: fraction
+
+	column Hours
+		dataType: double
+		isHidden
+		lineageTag: c536a0e2-457a-52a3-be93-3f741c7cb8d7
+		summarizeBy: sum
+		sourceColumn: assigned_hours
+
+	partition Assignment = entity
+		mode: directLake
+		source
+			entityName: gold_fact_assignment_month
+			expressionSource: DatabaseQuery

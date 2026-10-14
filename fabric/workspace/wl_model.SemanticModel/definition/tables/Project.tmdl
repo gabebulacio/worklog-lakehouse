@@ -1,0 +1,55 @@
+/// One row per source project code, with the stable key from the append-only registry.
+table Project
+	lineageTag: ba3cb76e-9ff0-54ac-9dee-6edc642df263
+
+	column 'Project Key'
+		dataType: int64
+		isKey
+		isHidden
+		lineageTag: cbdf5726-ba4f-54fa-9a2d-2f1642547dcf
+		summarizeBy: none
+		sourceColumn: project_key
+
+	column Source
+		dataType: string
+		lineageTag: 3c6c1573-2b3a-5ece-8a36-384a7451e908
+		summarizeBy: none
+		sourceColumn: source
+
+	column 'Project Code'
+		dataType: string
+		lineageTag: 82cd9077-e2cd-57b6-895d-21bc0e12435b
+		summarizeBy: none
+		sourceColumn: project_code
+
+	column Project
+		dataType: string
+		lineageTag: f508bcb0-825e-5bb0-ab79-ca3da30a2fb1
+		summarizeBy: none
+		sourceColumn: project_name
+
+	column 'Account ID'
+		dataType: string
+		isHidden
+		lineageTag: 02616ff7-0697-594b-9a64-001fae7dc590
+		summarizeBy: none
+		sourceColumn: account_id
+
+	column Billable
+		dataType: boolean
+		lineageTag: bc648670-b548-5062-8192-3ebbf622f4e4
+		summarizeBy: none
+		sourceColumn: is_billable
+
+	column 'First Seen'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 74e43975-7643-5b42-b0c6-84a1d97e30a4
+		summarizeBy: none
+		sourceColumn: first_seen
+
+	partition Project = entity
+		mode: directLake
+		source
+			entityName: gold_dim_project
+			expressionSource: DatabaseQuery

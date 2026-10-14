@@ -1,0 +1,128 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "timeliness",
+  "position": {
+    "x": 650,
+    "y": 360,
+    "z": 2,
+    "height": 340,
+    "width": 610,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "User"
+                    }
+                  },
+                  "Property": "Department"
+                }
+              },
+              "queryRef": "User.Department",
+              "nativeQueryRef": "Department",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity"
+                    }
+                  },
+                  "Property": "Expected People"
+                }
+              },
+              "queryRef": "Capacity.Expected People",
+              "nativeQueryRef": "Expected People"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity"
+                    }
+                  },
+                  "Property": "Logging People"
+                }
+              },
+              "queryRef": "Capacity.Logging People",
+              "nativeQueryRef": "Logging People"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity"
+                    }
+                  },
+                  "Property": "People Not Logging"
+                }
+              },
+              "queryRef": "Capacity.People Not Logging",
+              "nativeQueryRef": "People Not Logging"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Worklog"
+                    }
+                  },
+                  "Property": "Median Logging Delay (days)"
+                }
+              },
+              "queryRef": "Worklog.Median Logging Delay (days)",
+              "nativeQueryRef": "Median Logging Delay (days)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Worklog"
+                    }
+                  },
+                  "Property": "Logged Within 7 Days %"
+                }
+              },
+              "queryRef": "Worklog.Logged Within 7 Days %",
+              "nativeQueryRef": "Logged Within 7 Days %"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Coverage and logging timeliness by department'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

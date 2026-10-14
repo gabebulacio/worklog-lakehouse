@@ -1,0 +1,65 @@
+/// People expected to log with no worklog in the trailing window. A follow-up list.
+table 'Non-loggers'
+	lineageTag: de6d66f7-82c7-5016-bc12-b5417adbec69
+
+	/// Days since the person last logged (blank: never logged).
+	measure 'Days Without Logging' = MAX ( 'Non-loggers'[Days Since Last Log] )
+		formatString: #,##0
+		displayFolder: Review
+		lineageTag: 7bcfed8e-8c5a-5363-88c2-20efd47b6d3e
+
+	column 'User Key'
+		dataType: string
+		isHidden
+		lineageTag: 6b0c7a1e-88da-5eb2-abb8-a7b404e64e79
+		summarizeBy: none
+		sourceColumn: user_key
+
+	column Person
+		dataType: string
+		lineageTag: 5206b080-284e-501d-a9e7-83343b90464d
+		summarizeBy: none
+		sourceColumn: display_name
+
+	column Email
+		dataType: string
+		lineageTag: 416dbb37-d155-5822-8d00-596a88fce5c9
+		summarizeBy: none
+		sourceColumn: email
+
+	column Department
+		dataType: string
+		lineageTag: 5699cbd8-f835-57b3-824c-d1bf4db317ec
+		summarizeBy: none
+		sourceColumn: department
+
+	column Manager
+		dataType: string
+		lineageTag: 349ccc7b-e3a3-5610-9ff3-f616ef6e9ba0
+		summarizeBy: none
+		sourceColumn: manager_name
+
+	column 'Employee ID'
+		dataType: string
+		lineageTag: d2ddf603-1751-5278-82da-cab76ffbe093
+		summarizeBy: none
+		sourceColumn: employee_id
+
+	column 'Last Log Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: f3721d0a-ba92-5da1-8281-a1b9f694a3b6
+		summarizeBy: none
+		sourceColumn: last_log_date
+
+	column 'Days Since Last Log'
+		dataType: int64
+		lineageTag: b667b4fa-1ccd-52ca-8342-4c3da82bf652
+		summarizeBy: none
+		sourceColumn: days_since_last_log
+
+	partition 'Non-loggers' = entity
+		mode: directLake
+		source
+			entityName: gold_mart_nonloggers
+			expressionSource: DatabaseQuery

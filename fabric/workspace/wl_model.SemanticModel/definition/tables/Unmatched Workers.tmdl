@@ -1,0 +1,72 @@
+/// Worklog identities no person matched: the mapping-file worklist.
+table 'Unmatched Workers'
+	lineageTag: 830e0b1a-e0cc-5d8b-b98e-980d744f1bb7
+
+	/// Hours waiting on a mapping-file entry.
+	measure 'Worklist Hours' = SUM ( 'Unmatched Workers'[Hours] )
+		formatString: #,##0.0
+		displayFolder: Review
+		lineageTag: 0cf416f1-9c22-59f0-8605-0bab9633d76d
+
+	/// Worklog entries waiting on a mapping-file entry.
+	measure 'Worklist Entries' = SUM ( 'Unmatched Workers'[Entries] )
+		formatString: #,##0
+		displayFolder: Review
+		lineageTag: c60a1e51-b41a-5d02-9e44-ec8ba740adb8
+
+	column Source
+		dataType: string
+		lineageTag: ba73b50c-9860-5b55-9852-fc0ef04bc2ee
+		summarizeBy: none
+		sourceColumn: source
+
+	column 'Worker ID'
+		dataType: string
+		lineageTag: 732b0b2f-d074-54d7-b422-b8b560ef477a
+		summarizeBy: none
+		sourceColumn: worker_id
+
+	column 'Worker Email'
+		dataType: string
+		lineageTag: ee9c421c-83f4-56b2-bfa3-de71c8ab07df
+		summarizeBy: none
+		sourceColumn: worker_email
+
+	column 'Worker Name'
+		dataType: string
+		lineageTag: 2c05fbc8-cb1e-5640-b60a-d246633a4dca
+		summarizeBy: none
+		sourceColumn: worker_name
+
+	column Entries
+		dataType: int64
+		lineageTag: b1e5183a-a308-5767-ad9a-5e11077562e6
+		summarizeBy: sum
+		sourceColumn: entries
+
+	column Hours
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: b941175b-11b1-5d27-ac40-831ebe952827
+		summarizeBy: sum
+		sourceColumn: hours
+
+	column 'First Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 0723b276-c151-5b2c-bb3b-722bb2224a14
+		summarizeBy: none
+		sourceColumn: first_date
+
+	column 'Last Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 354a8480-98bf-573f-afcb-a393945ce124
+		summarizeBy: none
+		sourceColumn: last_date
+
+	partition 'Unmatched Workers' = entity
+		mode: directLake
+		source
+			entityName: gold_audit_unmatched_workers
+			expressionSource: DatabaseQuery

@@ -17,7 +17,7 @@ import os
 import sys
 from pathlib import Path
 
-ITEM_TYPES = ["Lakehouse", "VariableLibrary", "Notebook", "DataPipeline"]
+ITEM_TYPES = ["Lakehouse", "VariableLibrary", "Notebook", "DataPipeline", "SemanticModel", "Report"]
 REPO_DIR = Path(__file__).resolve().parent / "workspace"
 
 

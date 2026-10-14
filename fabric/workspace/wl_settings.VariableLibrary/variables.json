@@ -20,6 +20,12 @@
       "value": 160
     },
     {
+      "name": "CapacityHoursPerDay",
+      "note": "Working hours per person per weekday in gold_fact_capacity (the utilization denominator).",
+      "type": "Number",
+      "value": 8
+    },
+    {
       "name": "NonLoggerWindowDays",
       "note": "Expected users with no worklog in this many trailing days appear in gold_mart_nonloggers.",
       "type": "Integer",

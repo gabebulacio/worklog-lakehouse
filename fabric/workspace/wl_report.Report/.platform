@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "wl_report",
+    "description": "Power BI report on wl_model: overview, time & coverage, sold vs utilized, and the review worklist."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "35b1af11-f5f3-41ac-bba9-d5f836a8fe32"
+  }
+}

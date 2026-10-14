@@ -33,3 +33,10 @@ Read the project README's "How it works" table and the ADRs in `docs/decisions/`
 Relationships: `gold_fact_worklog[user_key|project_key|date]` → `gold_dim_user`, `gold_dim_project`, `gold_dim_date` (mark as date table); `gold_fact_assignment_month[user_key|deliverable_id]` → `gold_dim_user`, `gold_dim_deliverable`. Marts feed tiles directly. For the semantic model and report themselves, use the `power-bi-modeling`, `power-bi-dax` and `power-bi-report` skills.
 
 After any change: `python run.py demo` then `python run.py test`.
+
+## Semantic model and report
+The Power BI model is defined once in `local/build_model.py` (tables with friendly names, relationships, measures with description, format and display folder) and generated as Direct Lake TMDL into `fabric/workspace/wl_model.SemanticModel` (`python run.py model`). Never hand-edit the TMDL: `tests/test_model.py` fails on drift. A measure name can't equal a column name in the same table (rename the hidden column, e.g. `Worklog[Billable]`).
+
+To verify DAX: `python run.py model --import`, ask the user to open a **blank** Power BI Desktop, find its engine port (the `msmdsrv.exe` child of that `PBIDesktop` process), `pbi connect -d localhost:<port> --name ...`, `pbi database import-tmdl .lake/model_import/definition`, refresh each table (`pbi table refresh <t> --type Full`), then `python local/verify_model.py`. Add a DuckDB counterpart there for every new measure. Load the `power-bi-modeling`, `power-bi-dax` and `power-bi-report` skills first.
+
+The report `fabric/workspace/wl_report.Report` (PBIR) is edited with `pbi report` / `pbi visual` (`--no-sync`); bind measures with `--value`/`--field` and columns with `--row`/`--category` (table visuals treat `--value` as measures, so use matrices for column lists). `tests/test_report.py` checks every bound field exists in the model.

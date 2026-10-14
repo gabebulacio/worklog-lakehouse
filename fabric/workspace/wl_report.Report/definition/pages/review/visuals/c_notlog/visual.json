@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "c_notlog",
+  "position": {
+    "x": 860,
+    "y": 20,
+    "z": 2,
+    "height": 110,
+    "width": 400,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Capacity"
+                    }
+                  },
+                  "Property": "People Not Logging"
+                }
+              },
+              "queryRef": "Capacity.People Not Logging",
+              "nativeQueryRef": "People Not Logging"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

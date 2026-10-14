@@ -1,0 +1,104 @@
+/// One row per person, current version of the SCD2 history, plus an Unknown member.
+table User
+	lineageTag: 28a1dada-e604-5907-987b-d05a242b97eb
+
+	column 'User Key'
+		dataType: string
+		isKey
+		isHidden
+		lineageTag: e3ee3f43-1c9a-5b46-98ba-eff5fe3338ba
+		summarizeBy: none
+		sourceColumn: user_key
+
+	column Person
+		dataType: string
+		lineageTag: d9a7dcea-6d93-5765-b354-7281594320f0
+		summarizeBy: none
+		sourceColumn: display_name
+
+	column Email
+		dataType: string
+		lineageTag: 1dd3304a-f8bc-5606-8924-23938d55621f
+		summarizeBy: none
+		sourceColumn: email
+
+	column Department
+		dataType: string
+		lineageTag: c83a748e-8777-5c91-b566-39698f69e204
+		summarizeBy: none
+		sourceColumn: department
+
+	column 'Job Title'
+		dataType: string
+		lineageTag: b3872ae9-9282-5159-93b2-c4c3224e4fea
+		summarizeBy: none
+		sourceColumn: job_title
+
+	column Country
+		dataType: string
+		lineageTag: 26e15ab0-67d9-5a6b-9999-a073a178ca4f
+		summarizeBy: none
+		sourceColumn: country
+
+	column Origin
+		dataType: string
+		lineageTag: 89fc5b32-aea6-5108-8cf5-cff259c5b901
+		summarizeBy: none
+		sourceColumn: origin
+
+	column Manager
+		dataType: string
+		lineageTag: b62b9332-6e32-53a1-8df9-55b12706d43a
+		summarizeBy: none
+		sourceColumn: manager_name
+
+	column 'Employee ID'
+		dataType: string
+		lineageTag: 41dfb3fa-488b-5a05-84ab-312dbf8fd5e0
+		summarizeBy: none
+		sourceColumn: employee_id
+
+	column 'Account Enabled'
+		dataType: boolean
+		lineageTag: 8afb2ab7-8097-5af7-a2e3-c331bf1db281
+		summarizeBy: none
+		sourceColumn: account_enabled
+
+	column 'Timesheet Exempt'
+		dataType: boolean
+		lineageTag: ad637d5e-9463-545d-833a-3026e8cd65f1
+		summarizeBy: none
+		sourceColumn: is_timesheet_exempt
+
+	column 'Expected To Log'
+		dataType: boolean
+		lineageTag: 84799809-7f87-5ac6-8856-2ba6c56881c6
+		summarizeBy: none
+		sourceColumn: is_expected
+
+	column 'Hire Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 5cd00574-a3f6-5265-9367-a3fc88bb7170
+		summarizeBy: none
+		sourceColumn: hire_date
+
+	column 'Leave Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 8dddedd9-cac4-50ee-9eb8-813fc9b5e4d2
+		summarizeBy: none
+		sourceColumn: leave_date
+
+	column 'Current Since'
+		dataType: dateTime
+		isHidden
+		lineageTag: 61f151f2-aada-545a-a245-6cc88948fb81
+		summarizeBy: none
+		sourceColumn: current_since
+
+	partition User = entity
+		mode: directLake
+		source
+			entityName: gold_dim_user
+			expressionSource: DatabaseQuery

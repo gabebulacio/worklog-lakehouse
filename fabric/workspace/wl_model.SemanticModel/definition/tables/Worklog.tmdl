@@ -1,0 +1,176 @@
+/// One row per worklog from both time systems, attributed to a person and a project.
+table Worklog
+	lineageTag: 2b562965-4fa6-5c77-939b-bcb7d1b24a25
+
+	/// All hours in worklogs from both systems.
+	measure 'Hours Logged' = SUM ( Worklog[Hours] )
+		formatString: #,##0
+		displayFolder: Time
+		lineageTag: 34aaa778-1148-5a3f-827f-d72bf354c9ed
+
+	/// Hours logged against a CRM account (internal and pending projects excluded).
+	measure 'Billable Hours' = SUM ( Worklog[Billable] )
+		formatString: #,##0
+		displayFolder: Time
+		lineageTag: 103bb7b0-c7cd-5ad4-bbee-4c200e89b1e1
+
+	/// Billable hours as a share of all hours logged.
+	measure 'Billable Share %' = DIVIDE ( [Billable Hours], [Hours Logged] )
+		formatString: 0.0%
+		displayFolder: Time
+		lineageTag: 90ec2c29-e271-50e7-93a1-90d5abec187e
+
+	/// Hours no person could be matched to (kept in the fact as Unknown).
+	measure 'Unattributed Hours' = CALCULATE ( [Hours Logged], Worklog[Matched] = FALSE () )
+		formatString: #,##0
+		displayFolder: Identity
+		lineageTag: 2c420f54-c95d-5767-a0b1-d58c6edafc58
+
+	/// Share of hours waiting on the mapping-file worklist.
+	measure 'Unattributed Share %' = DIVIDE ( [Unattributed Hours], [Hours Logged] )
+		formatString: 0.00%
+		displayFolder: Identity
+		lineageTag: 329c3cc1-09a2-5a16-87b0-b0d207d4a621
+
+	/// Median days between the work date and when the entry was created.
+	measure 'Median Logging Delay (days)' = MEDIAN ( Worklog[Delay Days] )
+		formatString: 0.0
+		displayFolder: Timeliness
+		lineageTag: 358c7193-effb-5a8c-8058-468afdeb5885
+
+	/// Share of entries created within a week of the work date.
+	measure 'Logged Within 7 Days %' =
+			DIVIDE (
+			    CALCULATE ( COUNTROWS ( Worklog ), Worklog[Delay Days] <= 7 ),
+			    COUNTROWS ( Worklog )
+			)
+		formatString: 0.0%
+		displayFolder: Timeliness
+		lineageTag: 86d0acc9-2328-5506-bdc1-039e2edebc6f
+
+	/// Hours logged in the previous month (Date is the marked date table).
+	measure 'Hours Logged PM' = CALCULATE ( [Hours Logged], DATEADD ( 'Date'[Date], -1, MONTH ) )
+		formatString: #,##0
+		displayFolder: Time intelligence
+		lineageTag: 5f8e8b8e-0f43-5f85-9aa0-84a6b5c10aba
+
+	/// Change in hours logged against the previous month.
+	measure 'Hours Logged MoM %' =
+			VAR prior = [Hours Logged PM]
+			RETURN
+			    DIVIDE ( [Hours Logged] - prior, prior )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Time intelligence
+		lineageTag: df4dc778-4510-5128-b75f-27cc2347f339
+
+	/// Hours logged from 1 January to the end of the current filter.
+	measure 'Hours Logged YTD' = TOTALYTD ( [Hours Logged], 'Date'[Date] )
+		formatString: #,##0
+		displayFolder: Time intelligence
+		lineageTag: 7d7e41af-2d1b-5d38-a8f1-b2d5d70b673b
+
+	column Date
+		dataType: dateTime
+		isHidden
+		lineageTag: fad4beb2-f8ad-57ae-a67c-e9a119d34c0d
+		summarizeBy: none
+		sourceColumn: date
+
+	column Source
+		dataType: string
+		lineageTag: a170b0a2-7d4b-5ffe-a65f-a3a77a3b8017
+		summarizeBy: none
+		sourceColumn: source
+
+	column 'User Key'
+		dataType: string
+		isHidden
+		lineageTag: 79f918cf-da8c-52c8-8535-22f70ba01656
+		summarizeBy: none
+		sourceColumn: user_key
+
+	column 'Project Key'
+		dataType: int64
+		isHidden
+		lineageTag: 420ab212-0a84-5f3d-a1a8-7b2765939402
+		summarizeBy: none
+		sourceColumn: project_key
+
+	column 'Entry ID'
+		dataType: string
+		isHidden
+		lineageTag: db6b0501-6530-5580-b87f-7f9e36b33c43
+		summarizeBy: none
+		sourceColumn: external_id
+
+	column Hours
+		dataType: double
+		isHidden
+		lineageTag: 07f0e413-5e55-5a5c-8f74-60d456b16129
+		summarizeBy: sum
+		sourceColumn: hours
+
+	column Billable
+		dataType: double
+		isHidden
+		lineageTag: 0da92e53-4cbf-52c2-b96e-43a07f1a1c68
+		summarizeBy: sum
+		sourceColumn: billable_hours
+
+	column 'Delay Days'
+		dataType: int64
+		isHidden
+		lineageTag: a7e15e29-683c-5fad-8311-a11624596378
+		summarizeBy: sum
+		sourceColumn: delay_days
+
+	column Matched
+		dataType: boolean
+		lineageTag: b5c2cbd9-3e63-532c-aff4-fb62b791ed89
+		summarizeBy: none
+		sourceColumn: matched
+
+	column 'Match Method'
+		dataType: string
+		lineageTag: 1922aba8-93d5-56c1-b1f3-f125ada9b646
+		summarizeBy: none
+		sourceColumn: match_method
+
+	column 'Worker ID'
+		dataType: string
+		isHidden
+		lineageTag: 2fae4acb-d888-51cb-81fb-1e93e6d544a6
+		summarizeBy: none
+		sourceColumn: worker_id
+
+	column Summary
+		dataType: string
+		lineageTag: e5a4aede-52de-5ce0-bcaf-6c883345eea9
+		summarizeBy: none
+		sourceColumn: summary
+
+	column Issue
+		dataType: string
+		lineageTag: 8d62c7d1-7bec-5edf-bcc3-9c99bb22919c
+		summarizeBy: none
+		sourceColumn: issue_key
+
+	column 'Created At'
+		dataType: dateTime
+		isHidden
+		lineageTag: 73c55b5a-f3f3-5519-90dd-271418acddf9
+		summarizeBy: none
+		sourceColumn: created_at
+
+	column 'Modified On'
+		dataType: dateTime
+		isHidden
+		lineageTag: fd5810dd-7d55-596b-8428-ed9b54257d13
+		summarizeBy: none
+		sourceColumn: modified_on
+
+	partition Worklog = entity
+		mode: directLake
+		source
+			entityName: gold_fact_worklog
+			expressionSource: DatabaseQuery
