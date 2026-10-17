@@ -78,7 +78,7 @@ def arg(flag: str, default: str | None = None) -> str | None:
     return default
 
 
-# ---- commands -------------------------------------------------------------------------
+# Commands
 def setup():
     if not VENV_PY.exists():
         subprocess.check_call([sys.executable, "-m", "venv", str(ROOT / ".venv")])

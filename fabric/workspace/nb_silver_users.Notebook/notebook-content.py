@@ -62,7 +62,7 @@ def var(name, default=None):
         value = notebookutils.variableLibrary.get(f"$(/**/{VARLIB}/{name})")
         if value not in (None, ""):
             return value
-    except Exception:
+    except Exception:  # running locally, or the variable isn't in the library
         pass
     return os.getenv(name, default)
 
@@ -229,7 +229,7 @@ print(f"directory snapshot {snapshot_day}: {incoming.num_rows} users")
 
 # CELL ********************
 
-# --- SCD2: close changed versions and insert new ones in ONE Delta MERGE --------------
+# SCD2: close changed versions and insert new ones in ONE Delta MERGE
 # Classic staging trick: every incoming row appears once keyed by user_key (matches the
 # current version -> close it if the hash changed) and changed rows appear a second time
 # with a NULL merge key (never matches -> inserted as the new current version).
@@ -266,7 +266,7 @@ print(f"silver_user_history: {changes}")
 
 # CELL ********************
 
-# --- identity map ------------------------------------------------------------------------
+# Identity map
 register(hist="silver_user_history")
 candidates = sql("""
 with cur as (select * from hist where is_current),

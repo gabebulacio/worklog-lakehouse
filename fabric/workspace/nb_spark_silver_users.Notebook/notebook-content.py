@@ -49,7 +49,7 @@ def var(name, default=None):
         value = notebookutils.variableLibrary.get(f"$(/**/{VARLIB}/{name})")
         if value not in (None, ""):
             return value
-    except Exception:
+    except Exception:  # running locally, or the variable isn't in the library
         pass
     return os.getenv(name, default)
 
@@ -168,7 +168,7 @@ print(f"directory snapshot {snapshot_day}: {incoming.count()} users")
 
 # CELL ********************
 
-# --- SCD2 with the Delta MERGE API ------------------------------------------------------------
+# SCD2 with the Delta MERGE API
 cols = incoming.columns
 if not has_history:
     write(incoming, HISTORY)
@@ -200,7 +200,7 @@ print(f"{HISTORY}: {changes}")
 
 # CELL ********************
 
-# --- identity map -------------------------------------------------------------------------------
+# Identity map
 view(hist=HISTORY)
 spark.sql("""
 with cur as (select * from hist where is_current),

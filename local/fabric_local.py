@@ -85,7 +85,7 @@ class LocalFabric:
         self.module = self._build_module()
         self._spark = None
 
-    # ---- Spark (only for synapse_pyspark notebooks) -----------------------------------
+    # Spark (only for synapse_pyspark notebooks)
     @property
     def spark(self):
         if self._spark is None:
@@ -106,7 +106,7 @@ class LocalFabric:
             self._spark.sparkContext.setLogLevel("ERROR")
         return self._spark
 
-    # ---- notebookutils stand-in -------------------------------------------------
+    # Notebookutils stand-in
     def _build_module(self):
         nu = types.ModuleType("notebookutils")
         nu.__doc__ = "Local stand-in for Fabric notebookutils (see local/fabric_local.py)."
@@ -150,7 +150,7 @@ class LocalFabric:
                 return v["value"]
         raise KeyError(f"{lib}.{name} is not defined")
 
-    # ---- runner -------------------------------------------------------------------
+    # Runner
     def run(self, name: str, params: dict | None = None):
         """Execute a notebook by display name; returns its notebookutils.notebook.exit() value."""
         path = WORKSPACE / f"{name}.Notebook" / "notebook-content.py"

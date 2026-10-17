@@ -71,7 +71,7 @@ def var(name, default=None):
         value = notebookutils.variableLibrary.get(f"$(/**/{VARLIB}/{name})")
         if value not in (None, ""):
             return value
-    except Exception:
+    except Exception:  # running locally, or the variable isn't in the library
         pass
     return os.getenv(name, default)
 
@@ -197,7 +197,7 @@ for entity in ("accounts", "opportunities", "deliverables", "assignments"):
         db.register(entity, sql("select null::varchar x where false"))
 HAS_CRM = table_exists("bronze_crm_accounts")
 
-# --- project registry: append-only stable keys --------------------------------------------
+# Project registry: append-only stable keys
 registry = read_table("silver_project_registry")
 db.register("reg", registry if registry is not None else sql(
     "select null::bigint as project_key, null::varchar as source, null::varchar as project_code, "
@@ -226,7 +226,7 @@ register(reg="silver_project_registry")
 
 # CELL ********************
 
-# --- dimensions ------------------------------------------------------------------------------
+# Dimensions
 if HAS_CRM:  # timesheets name the client; the tracker uses the account's project key
     account = """left join accounts a
                    on (r.source = 'timesheet_app' and r.project_code = lower(trim(a.name)))
@@ -288,7 +288,7 @@ if HAS_CRM:
 
 # CELL ********************
 
-# --- fact_worklog: attribute every row to a person and a project --------------------------
+# Fact_worklog: attribute every row to a person and a project
 # Fallbacks guess from the email's local part, so they only count when the candidate's name
 # is unique: with two "Paula Figueroa"s, figueroa.paula@ could be either one. Ambiguous
 # rows stay unmatched and land in gold_audit_unmatched_workers for a mapping-file entry.
@@ -336,7 +336,7 @@ dim_date = sql(f"""
 write_table(dim_date, "gold_dim_date")
 db.register("ddate", dim_date)
 
-# --- capacity: the denominator of utilization ------------------------------------------------
+# Capacity: the denominator of utilization
 # One row per expected person (directory, not timesheet-exempt) per working day they were employed.
 capacity = sql(f"""
     select d.date, u.user_key, cast({float(var("CapacityHoursPerDay", 8))} as double) as capacity_hours
@@ -356,7 +356,7 @@ write_table(capacity, "gold_fact_capacity")
 
 # CELL ********************
 
-# --- sold vs utilized (CRM assignments) ---------------------------------------------------
+# Sold vs utilized (CRM assignments)
 MONTH = f"cast(date_trunc('month', DATE '{AS_OF}') as date)"
 if HAS_CRM:
     db.register("dd", dim_deliverable)
@@ -417,7 +417,7 @@ if HAS_CRM:
 
 # CELL ********************
 
-# --- operational marts ------------------------------------------------------------------------
+# Operational marts
 coverage = sql(f"""
     with months as (
         select cast(m as date) as month, last_day(m) as month_end

@@ -29,7 +29,7 @@ python run.py setup | demo | day | full | tables | sql "…" | nb <notebook> k=v
 
 - The files in `fabric/workspace/` are what deploys. Never edit a notebook's bootstrap cell: edit `fabric/shared/bootstrap.py`, then `python run.py sync`.
 - Never put a secret in the variable library; credentials come from Key Vault through `secret()`.
-- **Clean room.** This rebuilds kinds of problems from past employer work on synthetic data. Never add copied code, names, emails, tenant/app IDs, client names or real figures. New source quirks go in `nb_land_synthetic`, on fixed people or rows, not probabilities.
+- **Synthetic and scrubbed.** This adapts a platform from employer work, on synthetic data. Never add names, emails, tenant/app IDs, client names, real figures or anything else that identifies the employer, its people or its clients. New source quirks go in `nb_land_synthetic`, on fixed people or rows, not probabilities.
 - **Semantic model:** never edit `wl_model.SemanticModel` by hand; change `local/build_model.py`, then `python run.py model`. After changing a measure, re-run `local/verify_model.py` against a blank Power BI Desktop (never connect `pbi-cli` to a Desktop window you didn't open for this).
 - Notebooks must run on Python 3.11, the Fabric runtime and the version CI uses.
 - **Spark shadow path** (`nb_spark_*`, `nb_parity`, `pl_spark_shadow`): any change to the logic in a Python silver notebook or the fact attribution needs the same change in its Spark port. This machine can't run Spark; the CI job `spark-parity` is the proof, so say so when a Spark change hasn't been through CI yet.

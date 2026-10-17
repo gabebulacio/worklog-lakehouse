@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/gabebulacio/worklog-lakehouse/actions/workflows/ci.yml/badge.svg)](https://github.com/gabebulacio/worklog-lakehouse/actions/workflows/ci.yml) · [Case study](https://gabrielbulacio.com/projects/worklog-lakehouse)
 
-> Rebuilt from scratch, on synthetic data, from a timesheet platform I run in production on Microsoft Fabric: identity resolution across systems, late edits and deletions, keys finance relies on. None of the original code, data or names are here. The company is fictional, and every person, client and email is synthetic.
+> Adapted from a timesheet platform I run in production on Microsoft Fabric: identity resolution across systems, late edits and deletions, keys finance relies on. Everything that identified the employer, its people or its clients was removed, and the sources are synthetic. The company is fictional, and every person, client and email is synthetic.
 
 **Two time-tracking systems, a user directory and a CRM, consolidated into a governed star schema for Power BI: who logged what, against which client, compared with what was sold.** Built as Fabric items (Lakehouse, Python and Spark notebooks, Data Pipelines, Variable Library) in Git format, deployable with `fabric-cicd`. The core logic exists twice, in Python notebooks and in PySpark / Spark SQL, and a parity gate in CI proves both produce identical tables. The Python notebooks also run locally against a folder-based Delta lakehouse, so you can clone it and see every table in about two minutes.
 
@@ -64,7 +64,7 @@ Then `python run.py day`: the warning clears and those 376 entries are attribute
 Design decisions are in [docs/decisions/](docs/decisions/):
 - [0001](docs/decisions/0001-python-notebooks-not-spark.md): right-size the engine: Python notebooks for the daily load
 - [0002](docs/decisions/0002-silver-recompute-person-day-rule.md): recompute silver with the person-day rule instead of an incremental MERGE
-- [0003](docs/decisions/0003-clean-room-synthetic-rebuild.md): clean-room rebuild on synthetic sources
+- [0003](docs/decisions/0003-public-adaptation-on-synthetic-sources.md): a public adaptation on synthetic sources
 - [0004](docs/decisions/0004-spark-shadow-path.md): a Spark path, proven identical in CI
 - [0005](docs/decisions/0005-semantic-model-as-code.md): the semantic model as code, every measure checked against the lakehouse
 
@@ -129,6 +129,12 @@ python local/verify_model.py          # DAX vs DuckDB
 ### PySpark and Spark SQL
 
 The person-day rule, the SCD2 user history (Delta Lake `MERGE` API), the identity map and the ranked matching rules all run in Spark notebooks as well as in the Python ones ([ADR 0004](docs/decisions/0004-spark-shadow-path.md)). The CI job `spark-parity` runs both over a backfill plus four daily runs, with Java 17, Spark 3.5 and Delta 3.2 (the Fabric Runtime 1.3 versions), and requires zero differences. `nb_spark_maintenance` tunes the Spark tables: `spark_silver_worklogs` is partitioned by work month, `OPTIMIZE` Z-orders silver by `worker_id, date` and the fact by `user_key, project_key` (with V-Order on Fabric), and `VACUUM` keeps 7 days of history; CI checks each operation in the Delta history and that parity still holds afterwards. In Fabric, `pl_spark_shadow` runs the Spark notebooks, `nb_parity` and the maintenance after a daily run. The daily pipelines use the Python notebooks because the volume is small ([ADR 0001](docs/decisions/0001-python-notebooks-not-spark.md)); at larger volume the Spark notebooks take over without a rewrite.
+
+## How this was built
+
+This is an adaptation of a platform I run in production on Microsoft Fabric. Claude Code did the adapting: from the existing code and spec documents, it built this version for a fictional company on synthetic sources, and I reviewed each change and added my own before committing. That is why the early commits are large: each one is a reviewed batch, not a day of typing. Before publishing, everything that identified the employer, its people or its clients was removed ([ADR 0003](docs/decisions/0003-public-adaptation-on-synthetic-sources.md)).
+
+[CLAUDE.md](CLAUDE.md) and the [project skills](.claude/skills/) are the working agreement: never edit a bootstrap cell by hand, never hand-edit the semantic model, every change to a Python notebook's logic gets the same change in its Spark port, and done means `python run.py test` passes. The proof is mechanical: CI runs the item checks, the end-to-end runs and the Spark parity gate, and `local/verify_model.py` checks every DAX measure against DuckDB.
 
 ## Repo layout
 

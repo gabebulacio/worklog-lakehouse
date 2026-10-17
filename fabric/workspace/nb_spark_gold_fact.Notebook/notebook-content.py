@@ -49,7 +49,7 @@ def var(name, default=None):
         value = notebookutils.variableLibrary.get(f"$(/**/{VARLIB}/{name})")
         if value not in (None, ""):
             return value
-    except Exception:
+    except Exception:  # running locally, or the variable isn't in the library
         pass
     return os.getenv(name, default)
 

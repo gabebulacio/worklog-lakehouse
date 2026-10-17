@@ -72,7 +72,7 @@ def var(name, default=None):
         value = notebookutils.variableLibrary.get(f"$(/**/{VARLIB}/{name})")
         if value not in (None, ""):
             return value
-    except Exception:
+    except Exception:  # running locally, or the variable isn't in the library
         pass
     return os.getenv(name, default)
 
@@ -183,7 +183,7 @@ def secret(name, default=""):
 
 # CELL ********************
 
-# --- the synthetic world: people, clients, CRM ----------------------------------------
+# The synthetic world: people, clients, CRM
 import csv
 import random
 import uuid
@@ -347,7 +347,7 @@ print(f"world: {len(PEOPLE)} people, {len(CRM[0])} accounts, {len(CRM[3])} assig
 
 # CELL ********************
 
-# --- worklog entries with their full edit/delete history -------------------------------
+# Worklog entries with their full edit/delete history
 run_day = date.fromisoformat(run_date) if run_date else date.today()
 RUN_TS = datetime(run_day.year, run_day.month, run_day.day, 6, 0, tzinfo=timezone.utc)
 CUTOFF = RUN_TS - timedelta(hours=int(updated_since_hours))
@@ -452,7 +452,7 @@ print(f"run_date={run_day} mode={mode} entries in world={len(entries):,} extract
 
 # CELL ********************
 
-# --- render each API's payload and land it ------------------------------------------------
+# Render each API's payload and land it
 def iso(ts):
     return ts.strftime("%Y-%m-%dT%H:%M:%SZ")
 

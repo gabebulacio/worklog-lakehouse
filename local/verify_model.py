@@ -62,7 +62,7 @@ def compare(label, key, got, want, tol=1e-6):
         failures.append(f"{label} [{key}]: DAX={got} DuckDB={want}")
 
 
-# ---- by month -------------------------------------------------------------------------------
+# By month
 MONTH_MEASURES = ["Hours Logged", "Billable Hours", "Capacity Hours", "Utilization %", "Expected People", "Logging People",
                   "Coverage %", "Unattributed Hours", "Logged Within 7 Days %", "Hours Logged PM", "Hours Logged YTD",
                   "Assigned Hours", "People Not Logging", "Utilization % PM"]
@@ -91,7 +91,7 @@ for month, w in want.items():
     for measure, field in pairs.items():
         compare(measure, month, num(got.get(month, {}).get(measure)), w[field])
 
-# ---- by account -----------------------------------------------------------------------------
+# By account
 ACCOUNT_MEASURES = ["Assigned Hours", "Sold Value", "Billable Hours", "Sold Utilization %"]
 cols = ", ".join(f'"{m}", [{m}]' for m in ACCOUNT_MEASURES)
 got = {r["Account"]: r for r in dax(f"EVALUATE SUMMARIZECOLUMNS ( Account[Account], {cols} )") if r.get("Account")}
@@ -107,7 +107,7 @@ for w in duck("""
     for measure, field in zip(ACCOUNT_MEASURES, ["ah", "sv", "bh", "su"], strict=True):
         compare(measure, w["account_name"], num(g.get(measure)), w[field])
 
-# ---- totals ---------------------------------------------------------------------------------
+# Totals
 TOTALS = ["Median Logging Delay (days)", "Unattributed Share %", "Unused Sold Hours", "Billable Share %", "Average Sold Rate",
           "Worklist Hours", "Worklist Entries", "Days Without Logging"]
 cols = ", ".join(f'"{m}", [{m}]' for m in TOTALS)
@@ -127,7 +127,7 @@ w = duck("""
 for measure, field in zip(TOTALS, ["med", "us", "unused", "bs", "rate", "wh", "we", "dw"], strict=True):
     compare(measure, "total", num(g.get(measure)), w[field])
 
-# ---- time intelligence on one month -----------------------------------------------------------
+# Time intelligence on one month
 g = dax("""EVALUATE CALCULATETABLE ( ROW ( "mom", [Hours Logged MoM %], "chg", [Utilization Change (pts)] ),
            'Date'[Month] = DATE ( 2026, 9, 1 ) )""")[0]
 w = duck("""
