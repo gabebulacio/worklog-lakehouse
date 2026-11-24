@@ -1,6 +1,6 @@
 # Same libraries the Fabric Python notebook runtime ships, so local runs match the service.
 deltalake>=0.25
-duckdb>=1.1
+duckdb>=1.1,<2   # 2.0 removed Relation.fetchone(), which the notebooks use
 pandas>=2.2
 pyarrow>=17
 pyyaml>=6
