@@ -132,9 +132,9 @@ The person-day rule, the SCD2 user history (Delta Lake `MERGE` API), the identit
 
 ## How this was built
 
-This is an adaptation of a platform I run in production on Microsoft Fabric. Claude Code did the adapting: from the existing code and spec documents, it built this version for a fictional company on synthetic sources, and I reviewed each change and added my own before committing. That is why the early commits are large: each one is a reviewed batch, not a day of typing. Before publishing, everything that identified the employer, its people or its clients was removed ([ADR 0003](docs/decisions/0003-public-adaptation-on-synthetic-sources.md)).
+This is an adaptation of a platform I run in production on Microsoft Fabric, rebuilt from the existing code and spec documents for a fictional company on synthetic sources. I reviewed every change before committing it. That is why the early commits are large: each one is a reviewed batch, not a day of typing. Before publishing, everything that identified the employer, its people or its clients was removed ([ADR 0003](docs/decisions/0003-public-adaptation-on-synthetic-sources.md)).
 
-[CLAUDE.md](CLAUDE.md) and the [project skills](.claude/skills/) are the working agreement: never edit a bootstrap cell by hand, never hand-edit the semantic model, every change to a Python notebook's logic gets the same change in its Spark port, and done means `python run.py test` passes. The proof is mechanical: CI runs the item checks, the end-to-end runs and the Spark parity gate, and `local/verify_model.py` checks every DAX measure against DuckDB.
+The working rules: never edit a bootstrap cell by hand, never hand-edit the semantic model, every change to a Python notebook's logic gets the same change in its Spark port, and done means `python run.py test` passes. The proof is mechanical: CI runs the item checks, the end-to-end runs and the Spark parity gate, and `local/verify_model.py` checks every DAX measure against DuckDB.
 
 ## Repo layout
 

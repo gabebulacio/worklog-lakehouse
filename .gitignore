@@ -5,3 +5,7 @@ fabric/ipynb_export/
 .pytest_cache/
 .ruff_cache/
 __pycache__/
+
+# Local agent setup (not published)
+CLAUDE.md
+.claude/
